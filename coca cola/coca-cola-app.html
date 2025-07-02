@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coca-Cola Environmental Sustainability - Paper Bottles Case Study</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #f0f8ff;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .eco-bg {
+            background: linear-gradient(135deg, #134e5e 0%, #71b280 50%, #2d5a27 100%);
+            position: relative;
+        }
+        
+        .eco-gradient {
+            background: linear-gradient(45deg, #2d5a27, #4a7c59, #71b280, #88cc88);
+            background-size: 400% 400%;
+            animation: eco-flow 8s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .eco-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="leaves" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="2" fill="%23ffffff" opacity="0.05"/><circle cx="75" cy="75" r="1.5" fill="%23ffffff" opacity="0.03"/><circle cx="50" cy="10" r="1" fill="%23ffffff" opacity="0.04"/></pattern></defs><rect width="100" height="100" fill="url(%23leaves)"/></svg>');
+            animation: nature 20s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes eco-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(113, 178, 128, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(113, 178, 128, 0.6); }
+        }
+        
+        @keyframes eco-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes nature {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-3px, -3px); }
+            50% { transform: translate(-6px, 3px); }
+            75% { transform: translate(3px, -6px); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #f0f8ff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #2d5a27, #4a7c59);
+            border-color: #2d5a27;
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            border-color: #228B22;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            border-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-eco {
+            background: linear-gradient(135deg, #71b280, #88cc88);
+            border-color: #71b280;
+            color: white;
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(113, 178, 128, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        .card:hover {
+            border-color: rgba(113, 178, 128, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-sustainability {
+            background: linear-gradient(135deg, rgba(113, 178, 128, 0.2), rgba(136, 204, 136, 0.2));
+            border-color: #71b280;
+            animation: eco-glow 3s ease-in-out infinite;
+        }
+        
+        .card-environmental {
+            background: linear-gradient(135deg, rgba(34, 139, 34, 0.2), rgba(50, 205, 50, 0.2));
+            border-color: #228B22;
+        }
+        
+        .card-innovation {
+            background: linear-gradient(135deg, rgba(45, 90, 39, 0.2), rgba(74, 124, 89, 0.2));
+            border-color: #2d5a27;
+        }
+        
+        .card-writing {
+            background: linear-gradient(135deg, rgba(32, 58, 67, 0.2), rgba(44, 83, 100, 0.2));
+            border-color: #203a43;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, #228B22, #32CD32);
+            color: white;
+        }
+        
+        .badge-error {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+        }
+        
+        .badge-info {
+            background: linear-gradient(135deg, #17a2b8, #5bc0de);
+            color: white;
+        }
+        
+        .badge-eco {
+            background: linear-gradient(135deg, #71b280, #88cc88);
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .grid-cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .text-center { text-align: center; }
+        .text-white { color: #f0f8ff; }
+        .text-green { color: #32CD32; }
+        .text-red { color: #ff6b6b; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-bold { font-weight: bold; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-start { justify-content: flex-start; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-full { width: 100%; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-6 { height: 1.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .opacity-70 { opacity: 0.7; }
+        .opacity-80 { opacity: 0.8; }
+        .opacity-90 { opacity: 0.9; }
+        .flex-wrap { flex-wrap: wrap; }
+        
+        .fade-in {
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid rgba(113, 178, 128, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #f0f8ff;
+            font-family: inherit;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: rgba(113, 178, 128, 0.6);
+            box-shadow: 0 0 0 3px rgba(113, 178, 128, 0.1);
+        }
+        
+        textarea::placeholder {
+            color: rgba(240, 248, 255, 0.5);
+        }
+        
+        .writing-prompt {
+            background: linear-gradient(135deg, rgba(32, 58, 67, 0.3), rgba(44, 83, 100, 0.3));
+            border: 2px solid rgba(32, 58, 67, 0.5);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .word-count {
+            font-size: 0.875rem;
+            color: rgba(240, 248, 255, 0.7);
+            text-align: right;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body class="eco-bg">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+
+        // Icon components for Environmental Theme
+        const Leaf = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21c3-7 4-12 7-12s4 5 7 12M12 21V9M9 17v2m6-2v2" />
+            </svg>
+        );
+
+        const Recycle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+        );
+
+        const Globe = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const FileText = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        );
+
+        const Lightbulb = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+        );
+
+        const CheckCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const XCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const RotateCcw = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+            </svg>
+        );
+
+        const PlayCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+        );
+
+        const PenTool = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+        );
+
+        // Main Coca-Cola Environmental Learning Component
+        const CocaColaEnvironmentalApp = ({ onComplete, isCompleted }) => {
+            const [currentMode, setCurrentMode] = useState('video'); // 'video', 'read', 'questions', 'writing'
+            const [hasWatchedVideo, setHasWatchedVideo] = useState(false);
+            const [hasRead, setHasRead] = useState(false);
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [writingSubmissions, setWritingSubmissions] = useState({});
+
+            const sustainabilityArticle = `Coca-Cola Announces Revolutionary Paper Bottle Initiative: A Step Toward Sustainable Packaging
+
+In an unprecedented move toward environmental sustainability, The Coca-Cola Company has announced its groundbreaking initiative to develop and produce paper bottles for its beverages. This revolutionary step represents a significant shift in the beverage industry's approach to packaging and environmental responsibility.
+
+The new paper bottle technology, developed in partnership with leading sustainable packaging companies, aims to replace traditional plastic bottles with 100% recyclable paper-based containers. These innovative bottles are made from sustainably sourced wood fiber and feature a plant-based liner that maintains the beverage's quality and freshness while being completely biodegradable.
+
+According to company executives, this initiative is part of Coca-Cola's broader "World Without Waste" vision, which aims to collect and recycle the equivalent of every bottle and can the company sells globally by 2030. The paper bottle project specifically targets a 25% reduction in plastic usage across all Coca-Cola products by 2025.
+
+The environmental impact of this innovation is substantial. Traditional plastic bottles can take up to 450 years to decompose in landfills, while the new paper bottles are designed to break down completely within 6 months under proper composting conditions. This dramatic reduction in environmental persistence could help address the global plastic pollution crisis that affects our oceans, wildlife, and ecosystems.
+
+The development process involved extensive research and testing to ensure that the paper bottles maintain product quality while meeting consumer expectations. The bottles feature advanced barrier technology that prevents liquid leakage while preserving the iconic taste and carbonation that Coca-Cola consumers expect. Additionally, the paper bottles are designed to be as durable as traditional plastic containers during transportation and storage.
+
+Initial consumer testing in select European markets has shown overwhelmingly positive responses. Participants in the pilot program reported high satisfaction with the product quality and expressed strong support for the environmental benefits. Many consumers indicated they would be willing to pay a premium for sustainably packaged beverages.
+
+The paper bottle initiative also supports local economies through partnerships with sustainable forestry operations. These partnerships ensure that the wood fiber used in production comes from responsibly managed forests that are replanted and maintained according to strict environmental standards. This approach creates jobs in rural communities while supporting forest conservation efforts.
+
+From a manufacturing perspective, the transition to paper bottles requires significant investment in new production facilities and equipment. Coca-Cola has committed over $1 billion to this initiative, including the construction of specialized manufacturing plants and the retraining of workers to operate new packaging machinery.
+
+The company faces several challenges in implementing this technology on a global scale. These include ensuring consistent quality across different production facilities, managing supply chain logistics for new materials, and adapting the packaging for different climate conditions worldwide. However, Coca-Cola's research and development teams are confident that these challenges can be overcome through continued innovation and collaboration with sustainability partners.
+
+Environmental advocates have praised Coca-Cola's paper bottle initiative as a significant step forward in corporate environmental responsibility. The move is expected to inspire other beverage companies to develop similar sustainable packaging solutions, potentially transforming the entire industry's approach to environmental stewardship.
+
+Looking ahead, Coca-Cola plans to expand the paper bottle program to all major markets by 2028. The company is also exploring additional sustainable packaging innovations, including refillable glass bottles and aluminum containers made from 100% recycled materials. These efforts reflect a comprehensive approach to environmental sustainability that extends beyond just paper bottles.
+
+The success of this initiative could have far-reaching implications for environmental protection and corporate responsibility. If widely adopted across the beverage industry, paper bottle technology could significantly reduce plastic waste, decrease carbon emissions from packaging production, and help preserve natural resources for future generations.
+
+Consumer education will play a crucial role in the initiative's success. Coca-Cola is launching comprehensive awareness campaigns to inform consumers about proper disposal methods for paper bottles and the environmental benefits of choosing sustainably packaged products. These campaigns emphasize that while paper bottles are more environmentally friendly, they still require proper recycling to maximize their environmental benefits.`;
+
+            const comprehensionQuestions = [
+                {
+                    id: 1,
+                    question: "What is the main goal of Coca-Cola's paper bottle initiative?",
+                    options: ["To reduce production costs", "To replace plastic bottles with sustainable paper-based containers", "To increase sales revenue", "To improve taste quality"],
+                    correct: "To replace plastic bottles with sustainable paper-based containers"
+                },
+                {
+                    id: 2,
+                    question: "How long do traditional plastic bottles take to decompose in landfills?",
+                    options: ["6 months", "2 years", "50 years", "Up to 450 years"],
+                    correct: "Up to 450 years"
+                },
+                {
+                    id: 3,
+                    question: "How long do the new paper bottles take to break down under proper composting conditions?",
+                    options: ["6 months", "1 year", "2 years", "5 years"],
+                    correct: "6 months"
+                },
+                {
+                    id: 4,
+                    question: "What percentage reduction in plastic usage does Coca-Cola target by 2025?",
+                    options: ["15%", "20%", "25%", "30%"],
+                    correct: "25%"
+                },
+                {
+                    id: 5,
+                    question: "How much has Coca-Cola committed to invest in this initiative?",
+                    options: ["$500 million", "Over $1 billion", "$2 billion", "$750 million"],
+                    correct: "Over $1 billion"
+                },
+                {
+                    id: 6,
+                    question: "What is Coca-Cola's broader environmental vision called?",
+                    options: ["Green Future", "World Without Waste", "Sustainable Tomorrow", "EcoVision 2030"],
+                    correct: "World Without Waste"
+                },
+                {
+                    id: 7,
+                    question: "By what year does Coca-Cola plan to expand paper bottles to all major markets?",
+                    options: ["2025", "2026", "2027", "2028"],
+                    correct: "2028"
+                },
+                {
+                    id: 8,
+                    question: "What are the paper bottles made from?",
+                    options: ["Recycled newspapers", "Sustainably sourced wood fiber", "Bamboo fiber", "Cotton fiber"],
+                    correct: "Sustainably sourced wood fiber"
+                }
+            ];
+
+            const writingPrompts = [
+                {
+                    id: 1,
+                    title: "Environmental Impact Essay",
+                    prompt: "Write a 150-200 word essay explaining why environmental sustainability is important for businesses like Coca-Cola. Include specific examples from the article and your own ideas about how companies can protect the environment.",
+                    minWords: 150,
+                    maxWords: 200
+                },
+                {
+                    id: 2,
+                    title: "Consumer Perspective Letter",
+                    prompt: "Write a 100-150 word letter to Coca-Cola expressing your opinion about their paper bottle initiative. Explain whether you support the change and why. Include suggestions for other environmental improvements.",
+                    minWords: 100,
+                    maxWords: 150
+                },
+                {
+                    id: 3,
+                    title: "Innovation Analysis",
+                    prompt: "In 120-180 words, analyze the challenges and benefits of switching from plastic to paper bottles. Consider environmental, economic, and practical factors mentioned in the article.",
+                    minWords: 120,
+                    maxWords: 180
+                }
+            ];
+
+            const handleModeChange = (newMode) => {
+                if (newMode === 'read') {
+                    setHasRead(true);
+                }
+                setCurrentMode(newMode);
+            };
+
+            const handleVideoEnd = () => {
+                setHasWatchedVideo(true);
+            };
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                comprehensionQuestions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                setIsFinished(true);
+            };
+
+            const resetExercise = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+                setIsFinished(false);
+                setCurrentMode('video');
+            };
+
+            const handleWritingSubmit = (promptId, text) => {
+                setWritingSubmissions(prev => ({
+                    ...prev,
+                    [promptId]: text
+                }));
+            };
+
+            const getWordCount = (text) => {
+                return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            };
+
+            const canProceedToQuestions = hasWatchedVideo && hasRead;
+            const canProceedToWriting = canProceedToQuestions && showResults;
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-3xl font-bold text-green mb-6 text-center">🌱 Coca-Cola Environmental Sustainability Case Study</h2>
+                        <p className="text-white opacity-90 mb-6 text-center">Paper Bottles Innovation - A Step Toward a Sustainable Future</p>
+                        
+                        {/* Mode Selection */}
+                        <div className="flex justify-center gap-4 mb-6 flex-wrap">
+                            <button 
+                                className={`btn ${currentMode === 'video' ? 'btn-primary' : ''}`}
+                                onClick={() => handleModeChange('video')}
+                            >
+                                <PlayCircle className="w-4 h-4" />
+                                Watch Video
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'read' ? 'btn-primary' : ''} ${!hasWatchedVideo ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('read')}
+                                disabled={!hasWatchedVideo}
+                            >
+                                <FileText className="w-4 h-4" />
+                                Read Article
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'questions' ? 'btn-primary' : ''} ${!canProceedToQuestions ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('questions')}
+                                disabled={!canProceedToQuestions}
+                            >
+                                <Lightbulb className="w-4 h-4" />
+                                Comprehension Quiz
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'writing' ? 'btn-primary' : ''} ${!canProceedToWriting ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('writing')}
+                                disabled={!canProceedToWriting}
+                            >
+                                <PenTool className="w-4 h-4" />
+                                Writing Exercises
+                            </button>
+                        </div>
+
+                        {/* Progress Indicators */}
+                        <div className="flex justify-center gap-4 mb-6">
+                            {hasWatchedVideo && <div className="badge badge-success">Video Watched</div>}
+                            {hasRead && <div className="badge badge-success">Article Read</div>}
+                            {showResults && <div className="badge badge-success">Quiz Completed</div>}
+                            {Object.keys(writingSubmissions).length > 0 && <div className="badge badge-eco">Writing Started</div>}
+                        </div>
+
+                        {/* Video Mode */}
+                        {currentMode === 'video' && (
+                            <div className="card-environmental">
+                                <h3 className="text-xl font-bold text-white mb-4">🎥 Sustainability in Action: Coca-Cola's Environmental Journey</h3>
+                                <p className="text-white opacity-90 mb-4">Watch this video about environmental sustainability and corporate responsibility.</p>
+                                <div style={{
+                                    position: 'relative',
+                                    paddingBottom: '33.75%',
+                                    height: 0,
+                                    overflow: 'hidden',
+                                    marginBottom: '1.5rem',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                                    maxWidth: '800px',
+                                    width: '100%',
+                                    margin: '0 auto 1.5rem auto'
+                                }}>
+                                    <iframe
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            border: 'none'
+                                        }}
+                                        src="https://www.youtube.com/embed/yppkFJ7en8E"
+                                        title="Coca-Cola Environmental Sustainability"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onLoad={handleVideoEnd}
+                                    ></iframe>
+                                </div>
+                                <div className="text-center">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            handleVideoEnd();
+                                        }}
+                                    >
+                                        ✅ Mark Video as Watched
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Read Article Mode */}
+                        {currentMode === 'read' && (
+                            <div className="card-sustainability">
+                                <h3 className="text-xl font-bold text-white mb-4">📄 Environmental Article</h3>
+                                <p className="text-white opacity-90 mb-4">Read this comprehensive article about Coca-Cola's paper bottle initiative.</p>
+                                <div className="card" style={{
+                                    maxHeight: '400px',
+                                    overflowY: 'auto',
+                                    fontSize: '0.95rem',
+                                    lineHeight: '1.6'
+                                }}>
+                                    <div className="text-white opacity-90" style={{whiteSpace: 'pre-line'}}>
+                                        {sustainabilityArticle}
+                                    </div>
+                                </div>
+                                <div className="text-center mt-4">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            setHasRead(true);
+                                        }}
+                                    >
+                                        Mark Reading Complete
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Comprehension Quiz */}
+                        {currentMode === 'questions' && !isFinished && (
+                            <div className="card-innovation">
+                                <h3 className="text-xl font-bold text-white mb-6">🧠 Environmental Comprehension Quiz</h3>
+                                <p className="text-white opacity-90 mb-6">Test your understanding of Coca-Cola's sustainability initiatives.</p>
+                                
+                                <div className="space-y-4">
+                                    {comprehensionQuestions.map((question, index) => (
+                                        <div key={question.id} className="card">
+                                            <h4 className="text-lg font-bold text-white mb-4">
+                                                Question {index + 1}: {question.question}
+                                            </h4>
+                                            <div className="space-y-3">
+                                                {question.options.map((option, optionIndex) => {
+                                                    const letter = String.fromCharCode(65 + optionIndex);
+                                                    return (
+                                                        <button
+                                                            key={optionIndex}
+                                                            className={`btn w-full text-left justify-start ${
+                                                                selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                            } ${showResults ? (
+                                                                option === question.correct ? 'btn-success' : 
+                                                                selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                            ) : ''}`}
+                                                            onClick={() => handleAnswerSelect(question.id, option)}
+                                                            disabled={showResults}
+                                                        >
+                                                            <span className="font-bold mr-3">{letter}.</span>
+                                                            {option}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {showResults && (
+                                                <div className="mt-3 text-white opacity-80 text-sm">
+                                                    {selectedAnswers[question.id] === question.correct ? 
+                                                        <div className="flex items-center text-green-400">
+                                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                                            Correct!
+                                                        </div> : 
+                                                        <div className="flex items-center text-red-400">
+                                                            <XCircle className="w-4 h-4 mr-2" />
+                                                            Incorrect. The correct answer is: {question.correct}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center mt-6">
+                                    {!showResults && (
+                                        <button 
+                                            className="btn btn-primary" 
+                                            onClick={checkAnswers}
+                                            disabled={Object.keys(selectedAnswers).length < comprehensionQuestions.length}
+                                        >
+                                            Submit Quiz
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <button className="btn" onClick={resetExercise}>
+                                            <RotateCcw className="w-4 h-4" />
+                                            Restart Quiz
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <div className="badge badge-success">
+                                            Quiz Score: {score}/{comprehensionQuestions.length}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Writing Exercises */}
+                        {currentMode === 'writing' && (
+                            <div className="card-writing">
+                                <h3 className="text-xl font-bold text-white mb-6">✍️ Environmental Writing Exercises</h3>
+                                <p className="text-white opacity-90 mb-6">Complete these writing exercises to demonstrate your understanding of environmental sustainability.</p>
+                                
+                                <div className="space-y-6">
+                                    {writingPrompts.map((prompt, index) => (
+                                        <div key={prompt.id} className="writing-prompt">
+                                            <h4 className="text-lg font-bold text-white mb-3">
+                                                Exercise {index + 1}: {prompt.title}
+                                            </h4>
+                                            <p className="text-white opacity-90 mb-4">
+                                                {prompt.prompt}
+                                            </p>
+                                            <div className="mb-2">
+                                                <span className="text-sm text-white opacity-70">
+                                                    Word count requirement: {prompt.minWords}-{prompt.maxWords} words
+                                                </span>
+                                            </div>
+                                            <textarea
+                                                placeholder={`Write your ${prompt.title.toLowerCase()} here...`}
+                                                value={writingSubmissions[prompt.id] || ''}
+                                                onChange={(e) => {
+                                                    const text = e.target.value;
+                                                    setWritingSubmissions(prev => ({
+                                                        ...prev,
+                                                        [prompt.id]: text
+                                                    }));
+                                                }}
+                                            />
+                                            <div className="word-count">
+                                                {writingSubmissions[prompt.id] ? (
+                                                    <>
+                                                        Words: {getWordCount(writingSubmissions[prompt.id])}
+                                                        {getWordCount(writingSubmissions[prompt.id]) >= prompt.minWords && 
+                                                         getWordCount(writingSubmissions[prompt.id]) <= prompt.maxWords && (
+                                                            <span className="text-green ml-2">✓ Word count met</span>
+                                                        )}
+                                                        {getWordCount(writingSubmissions[prompt.id]) < prompt.minWords && (
+                                                            <span className="text-red ml-2">Need {prompt.minWords - getWordCount(writingSubmissions[prompt.id])} more words</span>
+                                                        )}
+                                                        {getWordCount(writingSubmissions[prompt.id]) > prompt.maxWords && (
+                                                            <span className="text-red ml-2">Exceeded by {getWordCount(writingSubmissions[prompt.id]) - prompt.maxWords} words</span>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    'Words: 0'
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="text-center mt-6">
+                                    <button 
+                                        className="btn btn-eco text-lg px-8 py-3"
+                                        onClick={() => {
+                                            const completedWriting = writingPrompts.filter(prompt => {
+                                                const submission = writingSubmissions[prompt.id];
+                                                if (!submission) return false;
+                                                const wordCount = getWordCount(submission);
+                                                return wordCount >= prompt.minWords && wordCount <= prompt.maxWords;
+                                            }).length;
+                                            
+                                            console.log('Writing exercises completed:', completedWriting, 'of', writingPrompts.length);
+                                            if (onComplete) onComplete(score + completedWriting);
+                                        }}
+                                        disabled={writingPrompts.filter(prompt => {
+                                            const submission = writingSubmissions[prompt.id];
+                                            if (!submission) return false;
+                                            const wordCount = getWordCount(submission);
+                                            return wordCount >= prompt.minWords && wordCount <= prompt.maxWords;
+                                        }).length === 0}
+                                    >
+                                        Complete Environmental Study →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Final Results */}
+                        {isFinished && currentMode !== 'writing' && (
+                            <div className="card-sustainability text-center">
+                                <h3 className="text-2xl font-bold text-green mb-4">Environmental Study Complete!</h3>
+                                <p className="text-white mb-4">
+                                    You've successfully completed the Coca-Cola sustainability case study comprehension section.
+                                </p>
+                                <div className="badge badge-success text-lg mb-4">
+                                    Quiz Score: {score}/{comprehensionQuestions.length}
+                                </div>
+                                <p className="text-white opacity-80 mb-6">
+                                    Continue to the writing exercises to complete your environmental learning journey.
+                                </p>
+                                <button 
+                                    className="btn btn-eco text-lg px-8 py-3"
+                                    onClick={() => handleModeChange('writing')}
+                                >
+                                    Continue to Writing Exercises →
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: IntroPage
+        const IntroPage = ({ onComplete }) => {
+            const [countdown, setCountdown] = useState(10);
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            onComplete();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, [onComplete]);
+
+            return (
+                <div className="eco-bg eco-gradient min-h-screen relative overflow-hidden">
+                    {/* Fun Background Animation */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                        style={{
+                            backgroundImage: `url('data:image/svg+xml,${encodeURIComponent(`
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+                                    <defs>
+                                        <radialGradient id="spotlight" cx="50%" cy="30%" r="60%">
+                                            <stop offset="0%" style="stop-color:#71b280;stop-opacity:0.4"/>
+                                            <stop offset="100%" style="stop-color:#2d5a27;stop-opacity:0.8"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#spotlight)"/>
+                                    <g opacity="0.8">
+                                        <!-- Coca-Cola bottle -->
+                                        <ellipse cx="600" cy="450" rx="40" ry="120" fill="#8B4513" stroke="#654321" stroke-width="3"/>
+                                        <ellipse cx="600" cy="380" rx="15" ry="30" fill="#654321"/>
+                                        <rect x="585" y="350" width="30" height="15" fill="#654321" rx="7"/>
+                                        <text x="600" y="440" font-family="serif" font-size="24" fill="#fff" text-anchor="middle" font-weight="bold">🥤</text>
+                                        <!-- Recycling symbols -->
+                                        <circle cx="300" cy="200" r="25" fill="none" stroke="#32CD32" stroke-width="4"/>
+                                        <path d="M285 200 L300 185 L315 200 L300 215 Z" fill="#32CD32"/>
+                                        <text x="300" y="250" font-family="serif" font-size="14" fill="#32CD32" text-anchor="middle">♻️</text>
+                                        <circle cx="900" cy="300" r="20" fill="none" stroke="#32CD32" stroke-width="3"/>
+                                        <path d="M890 300 L900 290 L910 300 L900 310 Z" fill="#32CD32"/>
+                                        <!-- Green leaves -->
+                                        <ellipse cx="200" cy="400" rx="20" ry="10" fill="#228B22" transform="rotate(45 200 400)"/>
+                                        <ellipse cx="210" cy="390" rx="15" ry="8" fill="#228B22" transform="rotate(-30 210 390)"/>
+                                        <ellipse cx="850" cy="500" rx="18" ry="9" fill="#228B22" transform="rotate(60 850 500)"/>
+                                        <ellipse cx="860" cy="490" rx="12" ry="6" fill="#228B22" transform="rotate(-45 860 490)"/>
+                                        <!-- Paper texture -->
+                                        <rect x="400" y="600" width="400" height="100" fill="#F5DEB3" stroke="#D2B48C" stroke-width="2" rx="10"/>
+                                        <text x="600" y="630" font-family="serif" font-size="16" fill="#8B4513" text-anchor="middle">Sustainable Paper Bottles</text>
+                                        <text x="600" y="650" font-family="serif" font-size="14" fill="#8B4513" text-anchor="middle">Innovation for the Future</text>
+                                    </g>
+                                </svg>
+                            `)}')`
+                        }}
+                    />
+
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-8">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-7xl font-bold text-green-400 mb-6 tracking-wider" style={{
+                                textShadow: '3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(113,178,128,0.3)'
+                            }}>
+                                🌱 COCA-COLA ECO 🥤
+                            </h1>
+                            <h2 className="text-3xl font-bold text-white mb-8 opacity-90">
+                                SUSTAINABILITY INNOVATION CASE STUDY
+                            </h2>
+                            
+                            <div className="glass-card p-8 mb-8" style={{
+                                background: 'rgba(113, 178, 128, 0.15)',
+                                backdropFilter: 'blur(10px)',
+                                border: '2px solid rgba(113, 178, 128, 0.4)',
+                                borderRadius: '15px'
+                            }}>
+                                <div className="text-green-400 text-xl font-bold mb-4">
+                                    🔍 ENVIRONMENTAL RESEARCH BRIEFING 🔍
+                                </div>
+                                <div className="text-white text-left space-y-3 text-lg">
+                                    <p><strong className="text-green-400">📅 When:</strong> 2020s - Modern Innovation Era</p>
+                                    <p><strong className="text-green-400">👤 Who:</strong> Coca-Cola Company Environmental Team</p>
+                                    <p><strong className="text-green-400">🌍 What:</strong> Revolutionary Paper Bottle Technology</p>
+                                    <p><strong className="text-green-400">❓ Status:</strong> Cutting-edge sustainability breakthrough!</p>
+                                    <p><strong className="text-green-400">🎯 Your Job:</strong> Analyze innovation, assess impact, write research!</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-4 text-white text-2xl mb-6">
+                                <div className="animate-bounce text-4xl">🌍</div>
+                                <span>Research begins in {countdown} seconds!</span>
+                                <div className="animate-bounce text-4xl">♻️</div>
+                            </div>
+                            
+                            <div className="text-green-400 text-lg opacity-80">
+                                "Discover how innovation can save our planet, one bottle at a time!"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [showIntro, setShowIntro] = useState(true);
+            const [completedExercises, setCompletedExercises] = useState({});
+
+            const handleExerciseComplete = (exerciseName, score) => {
+                setCompletedExercises(prev => ({
+                    ...prev,
+                    [exerciseName]: { completed: true, score }
+                }));
+            };
+
+            // Show intro page
+            if (showIntro) {
+                return <IntroPage onComplete={() => setShowIntro(false)} />;
+            }
+
+            return (
+                <div className="eco-gradient min-h-screen">
+                    <div className="container py-12">
+                        <div className="text-center mb-12">
+                            <h1 className="text-6xl font-bold text-green mb-4">🌱 Coca-Cola Environmental Study</h1>
+                            <p className="text-xl text-white opacity-90">Sustainability Innovation - Paper Bottles Case Study</p>
+                        </div>
+
+                        <CocaColaEnvironmentalApp 
+                            onComplete={(score) => handleExerciseComplete('cocaCola', score)}
+                            isCompleted={completedExercises.cocaCola?.completed || false}
+                        />
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

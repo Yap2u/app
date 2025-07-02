@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wild West Bank Robbery - Jesse James Gang Investigation</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .heist-bg {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #654321 100%);
+            min-height: 100vh;
+        }
+        
+        .western-gradient {
+            background: linear-gradient(45deg, #8B4513, #D2691E, #CD853F, #DEB887);
+            background-size: 400% 400%;
+            animation: western-flow 20s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .western-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255,215,0,0.3), transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,215,0,0.2), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255,215,0,0.1), transparent);
+            background-repeat: repeat;
+            background-size: 300px 150px;
+            animation: dust-flow 25s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes western-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes dust-flow {
+            0%, 100% { opacity: 0.4; transform: translateX(0); }
+            50% { opacity: 0.8; transform: translateX(-20px); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #f5f5dc;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: rgba(139, 69, 19, 0.8);
+            border-color: rgba(160, 82, 45, 0.9);
+        }
+        
+        .btn-success {
+            background: rgba(34, 139, 34, 0.8);
+            border-color: rgba(50, 205, 50, 0.9);
+        }
+        
+        .btn-danger {
+            background: rgba(139, 0, 0, 0.8);
+            border-color: rgba(220, 20, 60, 0.9);
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card-heist {
+            background: rgba(139, 69, 19, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .text-gold {
+            color: #FFD700;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: bold;
+        }
+        
+        .badge-success {
+            background: rgba(34, 139, 34, 0.8);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+        
+        // Icon Components
+        const PlayCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293H15M9 10v4a2 2 0 002 2h2a2 2 0 002-2v-4M9 10a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+        );
+
+        const CheckCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const XCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const RotateCcw = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+            </svg>
+        );
+
+        const Volume2 = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M6.343 6.343L4.93 4.93m0 0L3.515 6.343m1.414-1.414L6.343 6.343M19.07 19.07l1.414-1.414M19.07 19.07L17.657 17.657" />
+            </svg>
+        );
+
+        const VolumeX = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+        );
+
+        // Component: IntroPage (10-second countdown)
+        const IntroPage = ({ onComplete }) => {
+            const [countdown, setCountdown] = useState(10);
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            onComplete();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, [onComplete]);
+
+            return (
+                <div className="heist-bg western-gradient min-h-screen relative overflow-hidden">
+                    {/* Fun Background Animation */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                        style={{
+                            backgroundImage: `url('data:image/svg+xml,${encodeURIComponent(`
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+                                    <defs>
+                                        <radialGradient id="spotlight" cx="50%" cy="30%" r="60%">
+                                            <stop offset="0%" style="stop-color:#FFD700;stop-opacity:0.4"/>
+                                            <stop offset="100%" style="stop-color:#8B4513;stop-opacity:0.8"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#spotlight)"/>
+                                    <g opacity="0.8">
+                                        <!-- Western bank building -->
+                                        <rect x="400" y="300" width="400" height="200" fill="#8B4513" stroke="#654321" stroke-width="4"/>
+                                        <rect x="430" y="330" width="60" height="80" fill="#4a4a4a"/>
+                                        <rect x="510" y="340" width="80" height="60" fill="#654321"/>
+                                        <rect x="650" y="330" width="60" height="80" fill="#4a4a4a"/>
+                                        <polygon points="390,300 600,250 810,300" fill="#654321"/>
+                                        <!-- Sheriff badge -->
+                                        <polygon points="300,200 320,180 340,200 330,230 310,230" fill="#FFD700" stroke="#8B4513" stroke-width="2"/>
+                                        <text x="315" y="210" font-family="serif" font-size="12" fill="#8B4513" font-weight="bold">★</text>
+                                        <!-- Wanted poster -->
+                                        <rect x="850" y="150" width="120" height="150" fill="#F5DEB3" stroke="#8B4513" stroke-width="3"/>
+                                        <text x="910" y="180" font-family="serif" font-size="16" fill="#8B4513" text-anchor="middle" font-weight="bold">WANTED</text>
+                                        <rect x="870" y="190" width="80" height="80" fill="#DDD"/>
+                                        <text x="910" y="285" font-family="serif" font-size="12" fill="#8B4513" text-anchor="middle">JESSE JAMES</text>
+                                        <!-- Horse -->
+                                        <ellipse cx="200" cy="450" rx="60" ry="30" fill="#654321"/>
+                                        <ellipse cx="170" cy="435" rx="20" ry="15" fill="#654321"/>
+                                        <line x1="180" y1="420" x2="175" y2="405" stroke="#333" stroke-width="3"/>
+                                        <line x1="175" y1="405" x2="180" y2="400" stroke="#333" stroke-width="3"/>
+                                    </g>
+                                </svg>
+                            `)}')`
+                        }}
+                    />
+
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-8">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-7xl font-bold text-yellow-400 mb-6 tracking-wider" style={{
+                                textShadow: '3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.3)'
+                            }}>
+                                🤠 JESSE JAMES GANG 🏦
+                            </h1>
+                            <h2 className="text-3xl font-bold text-white mb-8 opacity-90">
+                                WILD WEST BANK HEIST INVESTIGATION
+                            </h2>
+                            
+                            <div className="glass-card p-8 mb-8" style={{
+                                background: 'rgba(139, 69, 19, 0.15)',
+                                backdropFilter: 'blur(10px)',
+                                border: '2px solid rgba(255, 215, 0, 0.4)',
+                                borderRadius: '15px'
+                            }}>
+                                <div className="text-yellow-400 text-xl font-bold mb-4">
+                                    🔍 SHERIFF'S INVESTIGATION BRIEFING 🔍
+                                </div>
+                                <div className="text-white text-left space-y-3 text-lg">
+                                    <p><strong className="text-yellow-400">📅 When:</strong> September 7, 1876</p>
+                                    <p><strong className="text-yellow-400">👤 Who:</strong> Jesse James and his notorious gang</p>
+                                    <p><strong className="text-yellow-400">🏦 What:</strong> The Great Northfield Bank Robbery</p>
+                                    <p><strong className="text-yellow-400">❓ Status:</strong> The most famous bank heist in the Wild West!</p>
+                                    <p><strong className="text-yellow-400">🎯 Your Job:</strong> Investigate the crime, analyze evidence, catch the outlaws!</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-4 text-white text-2xl mb-6">
+                                <div className="animate-bounce text-4xl">🤠</div>
+                                <span>Investigation starts in {countdown} seconds!</span>
+                                <div className="animate-bounce text-4xl">⭐</div>
+                            </div>
+                            
+                            <div className="text-yellow-400 text-lg opacity-80">
+                                "Saddle up, partner! Time to bring justice to the Wild West!"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Documentary Component
+        const JesseJamesDocumentary = ({ onComplete, isCompleted }) => {
+            const [currentMode, setCurrentMode] = useState('video');
+            const [hasWatchedVideo, setHasWatchedVideo] = useState(false);
+            const [hasListened, setHasListened] = useState(false);
+            const [hasRead, setHasRead] = useState(false);
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [isPlaying, setIsPlaying] = useState(false);
+
+            const transcript = `On September 7, 1876, the most notorious outlaw gang in American history rode into the quiet town of Northfield, Minnesota. The Jesse James Gang, led by the infamous Jesse James and his brother Frank, had come to rob the First National Bank in what would become one of the most dramatic and disastrous bank robberies of the Wild West era.
+
+The James-Younger Gang, as they were also known, had been terrorizing banks and trains across Missouri, Kansas, and neighboring states for over a decade. This robbery was different - it was their first major heist outside their familiar territory, and the citizens of Northfield were ready to fight back.
+
+The gang consisted of eight members: Jesse James, Frank James, Cole Younger, Jim Younger, Bob Younger, Charlie Pitts, Clell Miller, and Bill Chadwell. They had spent days in Northfield, posing as cattle buyers and horse traders, carefully studying the bank and the town's routines.
+
+On that fateful Thursday afternoon, the plan was simple: three men would enter the bank while the others created a diversion outside. Jesse James, Bob Younger, and Charlie Pitts entered the First National Bank while Frank James and the rest of the gang waited outside on horseback, ready for a quick escape.
+
+Inside the bank, the outlaws encountered unexpected resistance. Joseph Lee Heywood, the acting cashier, refused to open the vault despite threats and violence. When the robbers demanded access to the safe, Heywood bravely declared he could not open it, even though it was actually unlocked. His heroic refusal would cost him his life.
+
+Outside, the situation was deteriorating rapidly. Bill Chadwell, who was supposed to be the gang's local guide, had underestimated the resolve of Northfield's citizens. As soon as townspeople realized what was happening, they began firing from windows and doorways with rifles and shotguns.
+
+The robbery quickly turned into a fierce gun battle in the streets. Clell Miller was shot and killed almost immediately, and Bill Chadwell soon followed. The gang's horses were being shot from under them, and the carefully planned escape was turning into a desperate flight for survival.
+
+After shooting Heywood and another bank employee, the surviving gang members rushed out of the bank empty-handed. The vault had remained closed, and they had stolen less than $30 from the cash drawer - a pittance compared to their usual hauls of thousands of dollars.
+
+The chase that followed became legendary. For two weeks, one of the largest manhunts in Minnesota history pursued the surviving gang members through swamps, forests, and farmland. Cole, Jim, and Bob Younger were eventually captured, wounded and exhausted, while Jesse and Frank James managed to escape back to Missouri.
+
+The Northfield raid marked the beginning of the end for the James Gang. The botched robbery had cost them half their members and showed that their reign of terror was not unstoppable. The citizens of Northfield had proven that ordinary people could stand up to the most feared outlaws of their time.
+
+Joseph Lee Heywood became a national hero, honored for his courage in refusing to open the vault despite facing death. His sacrifice saved the bank's money and helped bring down the most notorious criminal gang of the era. Today, Northfield celebrates "Defeat of Jesse James Days" every September, commemorating the day their town fought back against the Wild West's most wanted men.
+
+The failed Northfield robbery demonstrated that the age of the Wild West outlaw was coming to an end. Better communication, improved law enforcement, and citizens willing to defend their communities meant that even the most feared criminals could no longer operate with impunity.`;
+
+            const comprehensionQuestions = [
+                {
+                    id: 1,
+                    question: "When did the Northfield bank robbery take place?",
+                    options: ["September 7, 1876", "September 8, 1876", "August 7, 1876", "October 7, 1876"],
+                    correct: "September 7, 1876"
+                },
+                {
+                    id: 2,
+                    question: "What was the name of the bank that was robbed?",
+                    options: ["Northfield National Bank", "First National Bank", "Minnesota State Bank", "Farmers Bank"],
+                    correct: "First National Bank"
+                },
+                {
+                    id: 3,
+                    question: "Who was the acting cashier who refused to open the vault?",
+                    options: ["Frank James", "Joseph Lee Heywood", "Cole Younger", "Bill Chadwell"],
+                    correct: "Joseph Lee Heywood"
+                },
+                {
+                    id: 4,
+                    question: "How many members were in the James-Younger Gang during this robbery?",
+                    options: ["Six", "Seven", "Eight", "Nine"],
+                    correct: "Eight"
+                },
+                {
+                    id: 5,
+                    question: "Which gang members were killed during the robbery?",
+                    options: ["Jesse and Frank James", "Clell Miller and Bill Chadwell", "Cole and Bob Younger", "Charlie Pitts and Jim Younger"],
+                    correct: "Clell Miller and Bill Chadwell"
+                }
+            ];
+
+            const playText = () => {
+                if ('speechSynthesis' in window) {
+                    if (isPlaying) {
+                        window.speechSynthesis.cancel();
+                        setIsPlaying(false);
+                    } else {
+                        const utterance = new SpeechSynthesisUtterance(transcript);
+                        utterance.rate = 0.9;
+                        utterance.onend = () => setIsPlaying(false);
+                        window.speechSynthesis.speak(utterance);
+                        setIsPlaying(true);
+                        setHasListened(true);
+                    }
+                }
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                comprehensionQuestions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+            };
+
+            const canProceedToQuestions = hasWatchedVideo && hasListened && hasRead;
+
+            return (
+                <div className="space-y-6">
+                    {/* Navigation Tabs */}
+                    <div className="flex flex-wrap gap-2 justify-center">
+                        <button 
+                            className={`btn ${currentMode === 'video' ? 'btn-primary' : ''}`}
+                            onClick={() => setCurrentMode('video')}
+                        >
+                            📹 Watch Documentary
+                        </button>
+                        <button 
+                            className={`btn ${currentMode === 'listen' ? 'btn-primary' : ''}`}
+                            onClick={() => setCurrentMode('listen')}
+                        >
+                            {hasListened ? <CheckCircle className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                            Listen to Story
+                        </button>
+                        <button 
+                            className={`btn ${currentMode === 'read' ? 'btn-primary' : ''}`}
+                            onClick={() => setCurrentMode('read')}
+                        >
+                            {hasRead ? <CheckCircle className="w-4 h-4" /> : '📖'}
+                            Read Account
+                        </button>
+                        <button 
+                            className={`btn ${currentMode === 'questions' ? 'btn-primary' : ''} ${!canProceedToQuestions ? 'opacity-50' : ''}`}
+                            onClick={() => canProceedToQuestions && setCurrentMode('questions')}
+                            disabled={!canProceedToQuestions}
+                        >
+                            ❓ Investigation Quiz
+                        </button>
+                    </div>
+
+                    {/* Content Sections */}
+                    {currentMode === 'video' && (
+                        <div className="card card-heist">
+                            <h3 className="text-xl font-bold text-white mb-4">🎬 Jesse James Gang Documentary</h3>
+                            <div className="aspect-video bg-black rounded-lg overflow-hidden mb-4">
+                                <iframe
+                                    className="w-full h-full"
+                                    src="https://www.youtube.com/embed/4C6k2FwXm2Q"
+                                    title="Jesse James Gang Documentary"
+                                    frameBorder="0"
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    allowFullScreen
+                                    onLoad={() => setHasWatchedVideo(true)}
+                                />
+                            </div>
+                            <div className="text-center">
+                                <button 
+                                    className="btn btn-success"
+                                    onClick={() => setHasWatchedVideo(true)}
+                                >
+                                    Mark Video as Watched
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentMode === 'listen' && (
+                        <div className="card card-heist">
+                            <h3 className="text-xl font-bold text-white mb-4">🎧 Listen to the Story</h3>
+                            <div className="text-center mb-6">
+                                <button 
+                                    className={`btn ${isPlaying ? 'btn-danger' : 'btn-success'} text-lg px-8 py-4`}
+                                    onClick={playText}
+                                >
+                                    {isPlaying ? (
+                                        <>
+                                            <VolumeX className="w-6 h-6" />
+                                            Stop Audio
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Volume2 className="w-6 h-6" />
+                                            Play Audio Story
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                            <p className="text-white opacity-90 text-center">
+                                {isPlaying ? 'Audio is playing...' : 'Click the button above to listen to the Jesse James story.'}
+                            </p>
+                        </div>
+                    )}
+
+                    {currentMode === 'read' && (
+                        <div className="card card-heist">
+                            <h3 className="text-xl font-bold text-white mb-4">📖 Read the Account</h3>
+                            <div className="card" style={{
+                                maxHeight: '400px',
+                                overflowY: 'auto',
+                                fontSize: '0.95rem',
+                                lineHeight: '1.6'
+                            }}>
+                                <div className="text-white opacity-90" style={{whiteSpace: 'pre-line'}}>
+                                    {transcript}
+                                </div>
+                            </div>
+                            <div className="text-center mt-4">
+                                <button 
+                                    className="btn btn-success"
+                                    onClick={() => setHasRead(true)}
+                                >
+                                    Mark Reading Complete
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentMode === 'questions' && !isFinished && (
+                        <div className="card card-heist">
+                            <h3 className="text-xl font-bold text-white mb-6">🔍 Investigation Quiz</h3>
+                            <p className="text-white opacity-90 mb-6">Test your knowledge of the Jesse James Gang's failed Northfield robbery.</p>
+                            
+                            <div className="space-y-4">
+                                {comprehensionQuestions.map((question, index) => (
+                                    <div key={question.id} className="card">
+                                        <h4 className="text-lg font-bold text-white mb-4">
+                                            Question {index + 1}: {question.question}
+                                        </h4>
+                                        <div className="space-y-3">
+                                            {question.options.map((option, optionIndex) => {
+                                                const letter = String.fromCharCode(65 + optionIndex);
+                                                return (
+                                                    <button
+                                                        key={optionIndex}
+                                                        className={`btn w-full text-left justify-start ${
+                                                            selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                        } ${showResults ? (
+                                                            option === question.correct ? 'btn-success' : 
+                                                            selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                        ) : ''}`}
+                                                        onClick={() => {
+                                                            if (!showResults) {
+                                                                setSelectedAnswers(prev => ({
+                                                                    ...prev,
+                                                                    [question.id]: option
+                                                                }));
+                                                            }
+                                                        }}
+                                                        disabled={showResults}
+                                                    >
+                                                        <span className="font-bold mr-3">{letter}.</span>
+                                                        {option}
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                        {showResults && (
+                                            <div className="mt-3 text-white opacity-80 text-sm">
+                                                {selectedAnswers[question.id] === question.correct ? 
+                                                    <div className="flex items-center text-green-400">
+                                                        <CheckCircle className="w-4 h-4 mr-2" />
+                                                        Correct!
+                                                    </div> : 
+                                                    <div className="flex items-center text-red-400">
+                                                        <XCircle className="w-4 h-4 mr-2" />
+                                                        Incorrect. The correct answer is: {question.correct}
+                                                    </div>
+                                                }
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="flex justify-between items-center mt-6">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < comprehensionQuestions.length}
+                                    >
+                                        Submit Investigation Report
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <>
+                                        <div className="badge badge-success">
+                                            Investigation Score: {score}/{comprehensionQuestions.length}
+                                        </div>
+                                        <button 
+                                            className="btn btn-primary"
+                                            onClick={() => {
+                                                setIsFinished(true);
+                                                if (onComplete) onComplete(score);
+                                            }}
+                                        >
+                                            Complete Investigation →
+                                        </button>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {isFinished && (
+                        <div className="card card-heist text-center">
+                            <h3 className="text-2xl font-bold text-gold mb-4">Investigation Complete!</h3>
+                            <p className="text-white mb-4">
+                                You've successfully completed the Jesse James Gang case study.
+                            </p>
+                            <div className="badge badge-success text-lg mb-4">
+                                Final Score: {score}/{comprehensionQuestions.length}
+                            </div>
+                            <p className="text-white opacity-80 mb-6">
+                                Ready for the next Wild West criminal investigation.
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Evidence Matching Component
+        const EvidenceMatching = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const evidenceTerms = [
+                'outlaw gang', 'bank robbery', 'horseback escape', 'shootout',
+                'wanted poster', 'sheriff badge', 'bank vault', 'manhunt'
+            ];
+
+            const descriptions = [
+                'A group of criminals operating outside the law in the Old West',
+                'The crime of stealing money from a financial institution by force',
+                'Fleeing a crime scene using horses as transportation',
+                'A gun battle between outlaws and law enforcement',
+                'A public notice offering reward for capture of a criminal',
+                'A star-shaped symbol of law enforcement authority',
+                'A secure room where banks store money and valuables',
+                'An organized search for dangerous criminals by law enforcement'
+            ];
+
+            const correctAnswers = {
+                'outlaw gang': 'A group of criminals operating outside the law in the Old West',
+                'bank robbery': 'The crime of stealing money from a financial institution by force',
+                'horseback escape': 'Fleeing a crime scene using horses as transportation',
+                'shootout': 'A gun battle between outlaws and law enforcement',
+                'wanted poster': 'A public notice offering reward for capture of a criminal',
+                'sheriff badge': 'A star-shaped symbol of law enforcement authority',
+                'bank vault': 'A secure room where banks store money and valuables',
+                'manhunt': 'An organized search for dangerous criminals by law enforcement'
+            };
+
+            const handleAnswerSelect = (term, description) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [term]: description
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                Object.keys(correctAnswers).forEach(term => {
+                    if (selectedAnswers[term] === correctAnswers[term]) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                if (onComplete) onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="card card-heist">
+                    <h2 className="text-2xl font-bold text-gold mb-6">🔍 Evidence Matching</h2>
+                    <p className="text-white opacity-90 mb-6">Match each Wild West investigation term with its correct definition.</p>
+                    
+                    <div className="grid grid-cols-2 gap-6">
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-4">Investigation Terms</h3>
+                            {evidenceTerms.map(term => (
+                                <div
+                                    key={term}
+                                    className={`btn w-full text-left mb-2 ${selectedAnswers[term] ? 'btn-primary' : ''} ${
+                                        showResults ? (selectedAnswers[term] === correctAnswers[term] ? 'btn-success' : 'btn-danger') : ''
+                                    }`}
+                                    onClick={() => !showResults && setSelectedAnswers(prev => ({ ...prev, selectedTerm: term }))}
+                                >
+                                    🤠 {term}
+                                    {showResults && (
+                                        <span className="ml-2">
+                                            {selectedAnswers[term] === correctAnswers[term] ? 
+                                                <CheckCircle className="w-4 h-4 inline" /> : 
+                                                <XCircle className="w-4 h-4 inline" />
+                                            }
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-4">Definitions</h3>
+                            {descriptions.map(description => (
+                                <div
+                                    key={description}
+                                    className={`btn w-full text-left mb-2 ${
+                                        selectedAnswers.selectedTerm ? '' : 'opacity-70'
+                                    }`}
+                                    onClick={() => selectedAnswers.selectedTerm && handleAnswerSelect(selectedAnswers.selectedTerm, description)}
+                                >
+                                    {description}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center mt-6">
+                        <div className="flex gap-4">
+                            {!showResults && (
+                                <button 
+                                    className="btn btn-primary" 
+                                    onClick={checkAnswers}
+                                    disabled={Object.keys(selectedAnswers).length < evidenceTerms.length}
+                                >
+                                    🔍 Analyze Evidence
+                                </button>
+                            )}
+                            {showResults && (
+                                <button className="btn" onClick={resetExercise}>
+                                    <RotateCcw className="w-4 h-4" />
+                                    Re-examine Evidence
+                                </button>
+                            )}
+                        </div>
+                        {showResults && (
+                            <div className="badge badge-success">
+                                Evidence Score: {score}/{evidenceTerms.length}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [showIntro, setShowIntro] = useState(true);
+            const [completedExercises, setCompletedExercises] = useState({});
+            const [exerciseOrder, setExerciseOrder] = useState([]);
+
+            const handleExerciseComplete = (exerciseName, score) => {
+                setCompletedExercises(prev => ({
+                    ...prev,
+                    [exerciseName]: { completed: true, score }
+                }));
+            };
+
+            // Show intro page
+            if (showIntro) {
+                return <IntroPage onComplete={() => setShowIntro(false)} />;
+            }
+
+            return (
+                <div className="western-gradient min-h-screen">
+                    <div className="container py-12">
+                        <div className="text-center mb-12">
+                            <h1 className="text-6xl font-bold text-gold mb-4">🤠 Wild West Bank Robbery</h1>
+                            <p className="text-xl text-white opacity-90">Jesse James Gang Investigation - Northfield, 1876</p>
+                        </div>
+
+                        <JesseJamesDocumentary 
+                            onComplete={(score) => handleExerciseComplete('documentary', score)}
+                            isCompleted={completedExercises.documentary?.completed || false}
+                        />
+
+                        <EvidenceMatching 
+                            onComplete={(score) => handleExerciseComplete('evidenceMatching', score)}
+                            isCompleted={completedExercises.evidenceMatching?.completed || false}
+                        />
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baby Reindeer - Media Studies Case Study</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #f0f0f0;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        .media-bg {
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%);
+            position: relative;
+        }
+        
+        .media-gradient {
+            background: linear-gradient(45deg, #0f0f23, #1a1a2e, #16213e, #0e4b99);
+            background-size: 400% 400%;
+            animation: media-flow 10s ease-in-out infinite;
+            position: relative;
+        }
+        
+        .media-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="streaming" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="10" cy="40" r="0.5" fill="%23e50914" opacity="0.05"/><circle cx="40" cy="10" r="0.8" fill="%23ffffff" opacity="0.02"/></pattern></defs><rect width="100" height="100" fill="url(%23streaming)"/></svg>');
+            animation: stream 25s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes media-glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(229, 9, 20, 0.3), 0 0 40px rgba(229, 9, 20, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(229, 9, 20, 0.6), 0 0 60px rgba(229, 9, 20, 0.4); }
+        }
+        
+        @keyframes media-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes stream {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            25% { transform: translate(-2px, -2px) rotate(1deg); }
+            50% { transform: translate(-4px, 2px) rotate(-1deg); }
+            75% { transform: translate(2px, -4px) rotate(1deg); }
+        }
+        
+        .glass-card {
+            background: rgba(229, 9, 20, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(229, 9, 20, 0.2);
+            border-radius: 15px;
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(229, 9, 20, 0.2);
+            color: #f0f0f0;
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .btn:hover {
+            background: rgba(229, 9, 20, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(229, 9, 20, 0.5);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #e50914, #ff4757);
+            border-color: #e50914;
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #2ed573, #7bed9f);
+            border-color: #2ed573;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff3838, #ff6b6b);
+            border-color: #ff3838;
+            color: white;
+        }
+        
+        .btn-media {
+            background: linear-gradient(135deg, #0e4b99, #2980b9);
+            border-color: #0e4b99;
+            color: white;
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(229, 9, 20, 0.3);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 16px 0;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+        }
+        
+        .card:hover {
+            border-color: rgba(229, 9, 20, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(229, 9, 20, 0.4);
+        }
+        
+        .card-netflix {
+            background: linear-gradient(135deg, rgba(229, 9, 20, 0.2), rgba(255, 71, 87, 0.2));
+            border-color: #e50914;
+            animation: media-glow 4s ease-in-out infinite;
+        }
+        
+        .card-drama {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.2), rgba(22, 33, 62, 0.2));
+            border-color: #1a1a2e;
+        }
+        
+        .card-legal {
+            background: linear-gradient(135deg, rgba(14, 75, 153, 0.2), rgba(41, 128, 185, 0.2));
+            border-color: #0e4b99;
+        }
+        
+        .card-writing {
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.3), rgba(26, 26, 46, 0.3));
+            border-color: #0f0f23;
+        }
+        
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, #2ed573, #7bed9f);
+            color: white;
+        }
+        
+        .badge-error {
+            background: linear-gradient(135deg, #ff3838, #ff6b6b);
+            color: white;
+        }
+        
+        .badge-info {
+            background: linear-gradient(135deg, #0e4b99, #2980b9);
+            color: white;
+        }
+        
+        .badge-netflix {
+            background: linear-gradient(135deg, #e50914, #ff4757);
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .grid-cols-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .text-center { text-align: center; }
+        .text-white { color: #f0f0f0; }
+        .text-netflix { color: #e50914; }
+        .text-red { color: #ff6b6b; }
+        .text-blue { color: #74b9ff; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-bold { font-weight: bold; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-start { justify-content: flex-start; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-full { width: 100%; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-6 { height: 1.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .opacity-70 { opacity: 0.7; }
+        .opacity-80 { opacity: 0.8; }
+        .opacity-90 { opacity: 0.9; }
+        .flex-wrap { flex-wrap: wrap; }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid rgba(229, 9, 20, 0.3);
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+            font-size: 1rem;
+            line-height: 1.5;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: rgba(229, 9, 20, 0.6);
+            box-shadow: 0 0 0 3px rgba(229, 9, 20, 0.2);
+        }
+        
+        textarea::placeholder {
+            color: rgba(240, 240, 240, 0.5);
+        }
+        
+        .writing-prompt {
+            background: linear-gradient(135deg, rgba(15, 15, 35, 0.4), rgba(26, 26, 46, 0.4));
+            border: 2px solid rgba(229, 9, 20, 0.4);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        
+        .word-count {
+            font-size: 0.875rem;
+            color: rgba(240, 240, 240, 0.7);
+            text-align: right;
+            margin-top: 8px;
+        }
+        
+        .streaming-title {
+            font-family: 'Arial', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8), 0 0 20px rgba(229,9,20,0.5);
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body class="media-bg">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+
+        // Icon components for Media Theme
+        const Monitor = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+        );
+
+        const Film = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m0 0V1a1 1 0 011-1h2a1 1 0 011 1v18a1 1 0 01-1 1h-2a1 1 0 01-1-1V4H7z" />
+            </svg>
+        );
+
+        const FileText = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+        );
+
+        const Scale = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" />
+            </svg>
+        );
+
+        const CheckCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const XCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const PenTool = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+            </svg>
+        );
+
+        const PlayCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+        );
+
+        const RotateCcw = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+            </svg>
+        );
+
+        // Main Baby Reindeer Media Studies Component
+        const BabyReindeerMediaApp = ({ onComplete, isCompleted }) => {
+            const [currentMode, setCurrentMode] = useState('video');
+            const [hasWatchedVideo, setHasWatchedVideo] = useState(false);
+            const [hasRead, setHasRead] = useState(false);
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [writingSubmissions, setWritingSubmissions] = useState({});
+
+            const mediaArticle = `Baby Reindeer: A Study in Streaming Content and Real-World Impact
+
+The streaming series "Baby Reindeer" has become one of the most talked-about productions in recent streaming history, not just for its dramatic storytelling, but for the complex real-world issues it has raised about privacy, storytelling ethics, and the responsibility of streaming platforms.
+
+Created by Richard Gadd, who also stars in the series, "Baby Reindeer" presents itself as a "true story" about a comedian's experience with stalking and harassment. The seven-episode series, which premiered on a major streaming platform, follows Gadd's character Donny as he navigates a disturbing relationship with a woman who becomes obsessed with him after he shows her kindness at the pub where he works.
+
+The series gained massive popularity for its raw, unflinching portrayal of trauma, vulnerability, and the complex psychology of both victim and perpetrator. Gadd's performance and writing have been praised for their authenticity and emotional depth, with many viewers appreciating the honest exploration of difficult topics rarely addressed with such nuance in mainstream media.
+
+However, the series has also sparked significant controversy regarding the ethics of adapting real-life events for entertainment purposes. While the show includes disclaimers stating that names and details have been changed, internet users quickly began attempting to identify the real people behind the characters, particularly the stalker figure portrayed in the series.
+
+This phenomenon, known as "internet sleuthing," has raised serious questions about the responsibility of streaming platforms when presenting content labeled as "based on a true story." Critics argue that despite efforts to anonymize real individuals, the specific details provided in the series made identification inevitable, potentially putting real people at risk of harassment and legal consequences.
+
+The legal implications became apparent when the woman believed to be the inspiration for the stalker character filed a lawsuit against the streaming platform, claiming defamation and seeking substantial damages. The lawsuit alleges that the series portrayed her in a false and defamatory light, causing significant harm to her reputation and personal life.
+
+From a media studies perspective, "Baby Reindeer" represents a fascinating case study in the intersection of entertainment, truth, and digital culture. The series demonstrates how streaming platforms have become powerful cultural forces capable of shaping public perception and potentially affecting real lives in unprecedented ways.
+
+The show's success highlights the audience's appetite for authentic, personal stories, but also reveals the complex ethical landscape content creators must navigate when drawing from real experiences. Questions arise about consent, artistic license, and the duty of care platforms owe to individuals who may be portrayed in their content.
+
+The series has also sparked discussions about the nature of trauma and healing in the digital age. Gadd has spoken openly about using his art to process difficult experiences, but critics question whether public platforms are appropriate venues for such personal healing, especially when other individuals may be affected.
+
+Educational institutions have begun incorporating "Baby Reindeer" into media studies curricula as an example of how modern streaming content operates at the intersection of entertainment, journalism, and social media. The series serves as a lens through which to examine questions of truth in storytelling, platform responsibility, and the ethics of audience engagement.
+
+The phenomenon surrounding "Baby Reindeer" also illustrates the power dynamics inherent in streaming platforms' content creation and distribution. These platforms operate with significant influence over cultural narratives while facing relatively few regulatory constraints compared to traditional broadcast media.
+
+Industry professionals have used the "Baby Reindeer" case to call for clearer guidelines regarding content based on real events, particularly when individuals portrayed may be identifiable despite efforts at anonymization. Some argue for enhanced legal protections, while others advocate for more robust platform policies regarding fact-checking and consent.
+
+The series' impact extends beyond entertainment into discussions about mental health, consent, and the responsibilities of content creators when dealing with sensitive personal material. Mental health advocates have both praised the series for its honest portrayal of trauma and criticized it for potentially exploiting real individuals' experiences.
+
+Looking forward, "Baby Reindeer" may serve as a watershed moment for how streaming platforms approach content based on real events. The legal proceedings and public discourse surrounding the series are likely to influence industry standards and potentially lead to regulatory changes in how such content is produced and presented.
+
+The case underscores the need for media literacy education that helps audiences critically evaluate content presented as truthful while understanding the complex factors that influence how stories are told and received in the digital streaming era.`;
+
+            const comprehensionQuestions = [
+                {
+                    id: 1,
+                    question: "Who created and stars in the series 'Baby Reindeer'?",
+                    options: ["Richard Gadd", "Richard Gere", "Richard Curtis", "Richard Ayoade"],
+                    correct: "Richard Gadd"
+                },
+                {
+                    id: 2,
+                    question: "How many episodes does 'Baby Reindeer' have?",
+                    options: ["Six", "Seven", "Eight", "Nine"],
+                    correct: "Seven"
+                },
+                {
+                    id: 3,
+                    question: "What is the main controversy surrounding the series?",
+                    options: ["Poor acting", "Ethics of adapting real-life events without consent", "Copyright infringement", "Budget overruns"],
+                    correct: "Ethics of adapting real-life events without consent"
+                },
+                {
+                    id: 4,
+                    question: "What is 'internet sleuthing' in the context of this series?",
+                    options: ["Official investigation", "Audience attempts to identify real people behind characters", "Marketing strategy", "Legal research"],
+                    correct: "Audience attempts to identify real people behind characters"
+                },
+                {
+                    id: 5,
+                    question: "What legal action was taken related to the series?",
+                    options: ["Copyright lawsuit", "Defamation lawsuit by the alleged stalker", "Criminal charges", "Contract dispute"],
+                    correct: "Defamation lawsuit by the alleged stalker"
+                },
+                {
+                    id: 6,
+                    question: "What educational use has the series found?",
+                    options: ["Psychology textbooks", "Media studies curricula", "Legal training", "Creative writing courses"],
+                    correct: "Media studies curricula"
+                }
+            ];
+
+            const writingPrompts = [
+                {
+                    id: 1,
+                    title: "Ethics in Streaming Content",
+                    prompt: "Write a 150-200 word analysis of the ethical issues raised by 'Baby Reindeer.' Consider the responsibilities of streaming platforms, content creators, and audiences when dealing with stories 'based on true events.'",
+                    minWords: 150,
+                    maxWords: 200
+                },
+                {
+                    id: 2,
+                    title: "Media Literacy Reflection",
+                    prompt: "In 120-180 words, discuss how the 'Baby Reindeer' case demonstrates the importance of media literacy in the streaming age. What should audiences consider when consuming content labeled as 'true stories'?",
+                    minWords: 120,
+                    maxWords: 180
+                },
+                {
+                    id: 3,
+                    title: "Platform Responsibility Essay",
+                    prompt: "Write a 100-150 word argument about whether streaming platforms should have greater responsibility for verifying and protecting individuals in 'true story' content. Include your recommendations for industry standards.",
+                    minWords: 100,
+                    maxWords: 150
+                }
+            ];
+
+            const handleModeChange = (newMode) => {
+                if (newMode === 'read') {
+                    setHasRead(true);
+                }
+                setCurrentMode(newMode);
+            };
+
+            const handleVideoEnd = () => {
+                setHasWatchedVideo(true);
+            };
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                comprehensionQuestions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                setIsFinished(true);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+                setIsFinished(false);
+                setCurrentMode('video');
+            };
+
+            const getWordCount = (text) => {
+                return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+            };
+
+            const canProceedToQuestions = hasWatchedVideo && hasRead;
+            const canProceedToWriting = canProceedToQuestions && showResults;
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-3xl font-bold text-netflix mb-6 text-center streaming-title">
+                            📺 Baby Reindeer Media Study
+                        </h2>
+                        <p className="text-white opacity-90 mb-6 text-center">Streaming Content Ethics & Real-World Impact Case Study</p>
+                        
+                        {/* Mode Selection */}
+                        <div className="flex justify-center gap-4 mb-6 flex-wrap">
+                            <button 
+                                className={`btn ${currentMode === 'video' ? 'btn-primary' : ''}`}
+                                onClick={() => handleModeChange('video')}
+                            >
+                                <PlayCircle className="w-4 h-4" />
+                                Watch Preview
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'read' ? 'btn-primary' : ''} ${!hasWatchedVideo ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('read')}
+                                disabled={!hasWatchedVideo}
+                            >
+                                <FileText className="w-4 h-4" />
+                                Read Analysis
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'questions' ? 'btn-primary' : ''} ${!canProceedToQuestions ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('questions')}
+                                disabled={!canProceedToQuestions}
+                            >
+                                <Scale className="w-4 h-4" />
+                                Media Quiz
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'writing' ? 'btn-primary' : ''} ${!canProceedToWriting ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('writing')}
+                                disabled={!canProceedToWriting}
+                            >
+                                <PenTool className="w-4 h-4" />
+                                Critical Essays
+                            </button>
+                        </div>
+
+                        {/* Progress Indicators */}
+                        <div className="flex justify-center gap-4 mb-6">
+                            {hasWatchedVideo && <div className="badge badge-success">Preview Watched</div>}
+                            {hasRead && <div className="badge badge-success">Analysis Read</div>}
+                            {showResults && <div className="badge badge-success">Quiz Completed</div>}
+                            {Object.keys(writingSubmissions).length > 0 && <div className="badge badge-netflix">Essays Started</div>}
+                        </div>
+
+                        {/* Video Mode */}
+                        {currentMode === 'video' && (
+                            <div className="card-netflix">
+                                <h3 className="text-xl font-bold text-white mb-4">🎬 Baby Reindeer Series Preview</h3>
+                                <p className="text-white opacity-90 mb-4">Watch this preview to understand the series that sparked major discussions about streaming ethics.</p>
+                                <div style={{
+                                    position: 'relative',
+                                    paddingBottom: '33.75%',
+                                    height: 0,
+                                    overflow: 'hidden',
+                                    marginBottom: '1.5rem',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 8px rgba(229,9,20,0.5)',
+                                    maxWidth: '800px',
+                                    width: '100%',
+                                    margin: '0 auto 1.5rem auto'
+                                }}>
+                                    <iframe
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            border: 'none'
+                                        }}
+                                        src="https://www.youtube.com/embed/eafm1gB6SCM"
+                                        title="Baby Reindeer Series Preview"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onLoad={handleVideoEnd}
+                                    ></iframe>
+                                </div>
+                                <div className="text-center">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            handleVideoEnd();
+                                        }}
+                                    >
+                                        ✅ Mark Preview as Watched
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Read Analysis Mode */}
+                        {currentMode === 'read' && (
+                            <div className="card-drama">
+                                <h3 className="text-xl font-bold text-white mb-4">📚 Media Studies Analysis</h3>
+                                <p className="text-white opacity-90 mb-4">Read this comprehensive analysis of Baby Reindeer's impact on streaming culture and media ethics.</p>
+                                <div className="card" style={{
+                                    maxHeight: '400px',
+                                    overflowY: 'auto',
+                                    fontSize: '0.95rem',
+                                    lineHeight: '1.6'
+                                }}>
+                                    <div className="text-white opacity-90" style={{whiteSpace: 'pre-line'}}>
+                                        {mediaArticle}
+                                    </div>
+                                </div>
+                                <div className="text-center mt-4">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            setHasRead(true);
+                                        }}
+                                    >
+                                        Mark Analysis Complete
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Media Quiz */}
+                        {currentMode === 'questions' && !isFinished && (
+                            <div className="card-legal">
+                                <h3 className="text-xl font-bold text-white mb-6">⚖️ Media Studies Comprehension Quiz</h3>
+                                <p className="text-white opacity-90 mb-6">Test your understanding of the Baby Reindeer case and its implications for streaming media.</p>
+                                
+                                <div className="space-y-4">
+                                    {comprehensionQuestions.map((question, index) => (
+                                        <div key={question.id} className="card">
+                                            <h4 className="text-lg font-bold text-white mb-4">
+                                                Question {index + 1}: {question.question}
+                                            </h4>
+                                            <div className="space-y-3">
+                                                {question.options.map((option, optionIndex) => {
+                                                    const letter = String.fromCharCode(65 + optionIndex);
+                                                    return (
+                                                        <button
+                                                            key={optionIndex}
+                                                            className={`btn w-full text-left justify-start ${
+                                                                selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                            } ${showResults ? (
+                                                                option === question.correct ? 'btn-success' : 
+                                                                selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                            ) : ''}`}
+                                                            onClick={() => handleAnswerSelect(question.id, option)}
+                                                            disabled={showResults}
+                                                        >
+                                                            <span className="font-bold mr-3">{letter}.</span>
+                                                            {option}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {showResults && (
+                                                <div className="mt-3 text-white opacity-80 text-sm">
+                                                    {selectedAnswers[question.id] === question.correct ? 
+                                                        <div className="flex items-center text-green-400">
+                                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                                            Correct!
+                                                        </div> : 
+                                                        <div className="flex items-center text-red-400">
+                                                            <XCircle className="w-4 h-4 mr-2" />
+                                                            Incorrect. The correct answer is: {question.correct}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center mt-6">
+                                    {!showResults && (
+                                        <button 
+                                            className="btn btn-primary" 
+                                            onClick={checkAnswers}
+                                            disabled={Object.keys(selectedAnswers).length < comprehensionQuestions.length}
+                                        >
+                                            Submit Media Quiz
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <button className="btn" onClick={resetExercise}>
+                                            <RotateCcw className="w-4 h-4" />
+                                            Restart Quiz
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <div className="badge badge-success">
+                                            Quiz Score: {score}/{comprehensionQuestions.length}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Critical Essays */}
+                        {currentMode === 'writing' && (
+                            <div className="card-writing">
+                                <h3 className="text-xl font-bold text-white mb-6">✍️ Critical Media Analysis Essays</h3>
+                                <p className="text-white opacity-90 mb-6">Write critical essays analyzing the ethical and cultural implications of the Baby Reindeer case.</p>
+                                
+                                <div className="space-y-6">
+                                    {writingPrompts.map((prompt, index) => (
+                                        <div key={prompt.id} className="writing-prompt">
+                                            <h4 className="text-lg font-bold text-white mb-3">
+                                                Essay {index + 1}: {prompt.title}
+                                            </h4>
+                                            <p className="text-white opacity-90 mb-4">
+                                                {prompt.prompt}
+                                            </p>
+                                            <div className="mb-2">
+                                                <span className="text-sm text-white opacity-70">
+                                                    Word count requirement: {prompt.minWords}-{prompt.maxWords} words
+                                                </span>
+                                            </div>
+                                            <textarea
+                                                placeholder={`Write your ${prompt.title.toLowerCase()} here...`}
+                                                value={writingSubmissions[prompt.id] || ''}
+                                                onChange={(e) => {
+                                                    const text = e.target.value;
+                                                    setWritingSubmissions(prev => ({
+                                                        ...prev,
+                                                        [prompt.id]: text
+                                                    }));
+                                                }}
+                                            />
+                                            <div className="word-count">
+                                                {writingSubmissions[prompt.id] ? (
+                                                    <>
+                                                        Words: {getWordCount(writingSubmissions[prompt.id])}
+                                                        {getWordCount(writingSubmissions[prompt.id]) >= prompt.minWords && 
+                                                         getWordCount(writingSubmissions[prompt.id]) <= prompt.maxWords && (
+                                                            <span className="text-blue ml-2">✓ Word count met</span>
+                                                        )}
+                                                        {getWordCount(writingSubmissions[prompt.id]) < prompt.minWords && (
+                                                            <span className="text-red ml-2">Need {prompt.minWords - getWordCount(writingSubmissions[prompt.id])} more words</span>
+                                                        )}
+                                                        {getWordCount(writingSubmissions[prompt.id]) > prompt.maxWords && (
+                                                            <span className="text-red ml-2">Exceeded by {getWordCount(writingSubmissions[prompt.id]) - prompt.maxWords} words</span>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    'Words: 0'
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="text-center mt-6">
+                                    <button 
+                                        className="btn btn-media text-lg px-8 py-3"
+                                        onClick={() => {
+                                            const completedWriting = writingPrompts.filter(prompt => {
+                                                const submission = writingSubmissions[prompt.id];
+                                                if (!submission) return false;
+                                                const wordCount = getWordCount(submission);
+                                                return wordCount >= prompt.minWords && wordCount <= prompt.maxWords;
+                                            }).length;
+                                            
+                                            const totalScore = score + completedWriting;
+                                            console.log('Baby Reindeer media study completed with score:', totalScore);
+                                            if (onComplete) onComplete(totalScore);
+                                        }}
+                                        disabled={writingPrompts.filter(prompt => {
+                                            const submission = writingSubmissions[prompt.id];
+                                            if (!submission) return false;
+                                            const wordCount = getWordCount(submission);
+                                            return wordCount >= prompt.minWords && wordCount <= prompt.maxWords;
+                                        }).length === 0}
+                                    >
+                                        Complete Media Analysis Study →
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Final Results */}
+                        {isFinished && currentMode !== 'writing' && (
+                            <div className="card-netflix text-center">
+                                <h3 className="text-2xl font-bold text-netflix mb-4">Media Study Complete!</h3>
+                                <p className="text-white mb-4">
+                                    You've successfully completed the Baby Reindeer comprehension section.
+                                </p>
+                                <div className="badge badge-success text-lg mb-4">
+                                    Quiz Score: {score}/{comprehensionQuestions.length}
+                                </div>
+                                <p className="text-white opacity-80 mb-6">
+                                    Continue to the critical essays to complete your media analysis.
+                                </p>
+                                <button 
+                                    className="btn btn-media text-lg px-8 py-3"
+                                    onClick={() => handleModeChange('writing')}
+                                >
+                                    Continue to Critical Essays →
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: IntroPage
+        const IntroPage = ({ onComplete }) => {
+            const [countdown, setCountdown] = useState(10);
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            onComplete();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, [onComplete]);
+
+            return (
+                <div className="media-bg media-gradient min-h-screen relative overflow-hidden">
+                    {/* Fun Background Animation */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                        style={{
+                            backgroundImage: `url('data:image/svg+xml,${encodeURIComponent(`
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+                                    <defs>
+                                        <radialGradient id="spotlight" cx="50%" cy="30%" r="60%">
+                                            <stop offset="0%" style="stop-color:#e50914;stop-opacity:0.4"/>
+                                            <stop offset="100%" style="stop-color:#0e4b99;stop-opacity:0.8"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#spotlight)"/>
+                                    <g opacity="0.8">
+                                        <!-- Netflix-style screen -->
+                                        <rect x="400" y="250" width="400" height="300" fill="#000000" stroke="#e50914" stroke-width="4" rx="20"/>
+                                        <rect x="420" y="270" width="360" height="200" fill="#1a1a2e"/>
+                                        <circle cx="600" cy="370" r="30" fill="#e50914"/>
+                                        <polygon points="590,370 610,360 610,380" fill="#ffffff"/>
+                                        <!-- Streaming icons -->
+                                        <rect x="450" y="490" width="60" height="40" fill="#e50914" rx="5"/>
+                                        <text x="480" y="515" font-family="sans-serif" font-size="12" fill="white" text-anchor="middle" font-weight="bold">HD</text>
+                                        <rect x="530" y="490" width="60" height="40" fill="#0e4b99" rx="5"/>
+                                        <text x="560" y="515" font-family="sans-serif" font-size="10" fill="white" text-anchor="middle" font-weight="bold">4K</text>
+                                        <rect x="610" y="490" width="80" height="40" fill="#2ed573" rx="5"/>
+                                        <text x="650" y="515" font-family="sans-serif" font-size="10" fill="white" text-anchor="middle" font-weight="bold">DOLBY</text>
+                                        <!-- Media controls -->
+                                        <circle cx="300" cy="600" r="15" fill="#e50914"/>
+                                        <polygon points="295,600 305,595 305,605" fill="#ffffff"/>
+                                        <rect x="340" y="595" width="4" height="10" fill="#e50914"/>
+                                        <rect x="348" y="595" width="4" height="10" fill="#e50914"/>
+                                        <rect x="370" y="595" width="10" height="10" fill="#e50914"/>
+                                        <!-- Legal/Ethics symbols -->
+                                        <circle cx="150" cy="300" r="25" fill="#0e4b99"/>
+                                        <text x="150" y="310" font-family="serif" font-size="20" fill="white" text-anchor="middle" font-weight="bold">⚖️</text>
+                                        <circle cx="950" cy="400" r="20" fill="#ff3838"/>
+                                        <text x="950" y="410" font-family="serif" font-size="16" fill="white" text-anchor="middle" font-weight="bold">!</text>
+                                        <!-- Drama masks -->
+                                        <circle cx="200" cy="150" r="30" fill="#ffd700"/>
+                                        <path d="M185 140 Q200 150 215 140" stroke="#000" stroke-width="2" fill="none"/>
+                                        <circle cx="190" cy="135" r="3" fill="#000"/>
+                                        <circle cx="210" cy="135" r="3" fill="#000"/>
+                                        <circle cx="900" cy="200" r="30" fill="#ffd700"/>
+                                        <path d="M885 210 Q900 200 915 210" stroke="#000" stroke-width="2" fill="none"/>
+                                        <circle cx="890" cy="195" r="3" fill="#000"/>
+                                        <circle cx="910" cy="195" r="3" fill="#000"/>
+                                    </g>
+                                </svg>
+                            `)}')`
+                        }}
+                    />
+
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-8">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-7xl font-bold text-red-400 mb-6 tracking-wider streaming-title" style={{
+                                textShadow: '3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(229,9,20,0.3)'
+                            }}>
+                                📺 BABY REINDEER 🦌
+                            </h1>
+                            <h2 className="text-3xl font-bold text-white mb-8 opacity-90">
+                                MEDIA STUDIES & STREAMING ETHICS
+                            </h2>
+                            
+                            <div className="glass-card p-8 mb-8" style={{
+                                background: 'rgba(229, 9, 20, 0.15)',
+                                backdropFilter: 'blur(10px)',
+                                border: '2px solid rgba(229, 9, 20, 0.4)',
+                                borderRadius: '15px'
+                            }}>
+                                <div className="text-red-400 text-xl font-bold mb-4">
+                                    🔍 MEDIA ANALYST BRIEFING 🔍
+                                </div>
+                                <div className="text-white text-left space-y-3 text-lg">
+                                    <p><strong className="text-red-400">📅 When:</strong> 2024 - Netflix Original Series</p>
+                                    <p><strong className="text-red-400">👤 Who:</strong> Richard Gadd, comedian and writer</p>
+                                    <p><strong className="text-red-400">📺 What:</strong> Dark comedy-drama exploring stalking</p>
+                                    <p><strong className="text-red-400">❓ Status:</strong> Critical streaming phenomenon with real-world impact!</p>
+                                    <p><strong className="text-red-400">🎯 Your Job:</strong> Analyze media ethics, evaluate impact, study representation!</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-4 text-white text-2xl mb-6">
+                                <div className="animate-bounce text-4xl">📺</div>
+                                <span>Media analysis begins in {countdown} seconds!</span>
+                                <div className="animate-bounce text-4xl">🎬</div>
+                            </div>
+                            
+                            <div className="text-red-400 text-lg opacity-80">
+                                "Explore the complex world of streaming media and its real-world consequences!"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        const App = () => {
+            const [showIntro, setShowIntro] = useState(true);
+            const [completedExercises, setCompletedExercises] = useState({});
+
+            const handleExerciseComplete = (exerciseName, score) => {
+                setCompletedExercises(prev => ({
+                    ...prev,
+                    [exerciseName]: { completed: true, score }
+                }));
+            };
+
+            // Show intro page
+            if (showIntro) {
+                return <IntroPage onComplete={() => setShowIntro(false)} />;
+            }
+
+            return (
+                <div className="media-gradient min-h-screen">
+                    <div className="container py-12">
+                        <div className="text-center mb-12">
+                            <h1 className="text-6xl font-bold text-netflix mb-4 streaming-title">📺 Baby Reindeer</h1>
+                            <p className="text-xl text-white opacity-90">Media Studies - Streaming Ethics & Real-World Impact</p>
+                        </div>
+
+                        <BabyReindeerMediaApp 
+                            onComplete={(score) => handleExerciseComplete('babyReindeer', score)}
+                            isCompleted={completedExercises.babyReindeer?.completed || false}
+                        />
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

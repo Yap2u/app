@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yap2u App - Mystery Detective Adventures</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 50%, #1a1a1a 100%);
+            color: #f5f5dc;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.3);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: #f5f5dc;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 40px;
+            color: #f5f5dc;
+            opacity: 0.8;
+        }
+
+        .app-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .app-card {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(139, 69, 19, 0.15));
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            border-radius: 12px;
+            padding: 30px;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .app-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.6);
+        }
+
+        .app-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+
+        .app-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 215, 0, 0.3);
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎭 Yap2u Apps</h1>
+        <p class="subtitle">Interactive Mystery Adventures</p>
+        <p class="description">
+            Welcome to our collection of interactive detective experiences. 
+            Dive into immersive mysteries, solve puzzles, and test your investigative skills.
+        </p>
+
+        <div class="app-grid">
+            <a href="db cooper/db cooper-app.html" class="app-card">
+                <span class="app-icon">🕵️‍♂️🪂</span>
+                <h3 class="app-title">D.B. Cooper Mystery</h3>
+                <p class="app-description">
+                    Investigate America's greatest unsolved mystery! Experience the complete D.B. Cooper case through 
+                    interactive documentaries, evidence analysis, timeline reconstruction, and comprehension quizzes. 
+                    Test your detective skills in this immersive mystery adventure.
+                </p>
+            </a>
+
+            <a href="bank heist/bank-heist-app.html" class="app-card">
+                <span class="app-icon">🤠🏦💰</span>
+                <h3 class="app-title">Jesse James Gang Bank Heist</h3>
+                <p class="app-description">
+                    Step into the Wild West! Explore the notorious Jesse James Gang's failed 1876 bank robbery in Northfield, Minnesota. 
+                    Analyze historical documents, study the outlaws' tactics, and test your knowledge of America's most famous 
+                    bank robbers in this interactive Western adventure.
+                </p>
+            </a>
+
+            <a href="coca cola/coca-cola-app.html" class="app-card">
+                <span class="app-icon">🌱♻️🥤</span>
+                <h3 class="app-title">Coca-Cola Environmental Study</h3>
+                <p class="app-description">
+                    Explore corporate environmental responsibility! Learn about Coca-Cola's revolutionary paper bottle initiative 
+                    through interactive articles, comprehension quizzes, and writing exercises. Develop your understanding 
+                    of sustainability and environmental innovation in business.
+                </p>
+            </a>
+
+            <a href="dracula/dracula-app.html" class="app-card">
+                <span class="app-icon">🧛‍♂️🌙📚</span>
+                <h3 class="app-title">The Birth of Dracula</h3>
+                <p class="app-description">
+                    Uncover the gothic mystery! Explore the origins of Bram Stoker's legendary vampire through immersive videos, 
+                    literary analysis, and randomized exercises. Delve into Victorian literature, gothic themes, and the 
+                    cultural impact of this immortal tale in this mysterious scholarly adventure.
+                </p>
+            </a>
+
+            <a href="baby reindeer/baby-reindeer-app.html" class="app-card">
+                <span class="app-icon">📺🎭⚖️</span>
+                <h3 class="app-title">Baby Reindeer Media Study</h3>
+                <p class="app-description">
+                    Analyze streaming ethics and real-world impact! Explore the controversial series that sparked debates about 
+                    content responsibility, privacy, and media literacy. Study the intersection of entertainment and reality 
+                    in this comprehensive media analysis case study.
+                </p>
+            </a>
+        </div>
+
+        <div class="footer">
+            <p>Choose your adventure and start investigating! 🔍</p>
+        </div>
+    </div>
+</body>
+</html>

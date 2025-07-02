@@ -1,0 +1,3361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D.B. Cooper Investigation - Interactive Case Study</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'SF Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .detective-bg {
+            background: linear-gradient(135deg, #2c1810 0%, #1a1a1a 50%, #3d2817 100%);
+            min-height: 100vh;
+        }
+        
+        .noir-gradient {
+            background: linear-gradient(45deg, #0f0f0f, #2c1810, #1a1a1a, #3d2817);
+            background-size: 400% 400%;
+            animation: noir-flow 20s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .noir-gradient::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, rgba(255,215,0,0.3), transparent),
+                radial-gradient(1px 1px at 40px 70px, rgba(255,215,0,0.2), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255,215,0,0.1), transparent),
+                radial-gradient(2px 2px at 130px 80px, rgba(255,215,0,0.2), transparent),
+                radial-gradient(1px 1px at 160px 30px, rgba(255,215,0,0.1), transparent),
+                radial-gradient(2px 2px at 200px 100px, rgba(255,215,0,0.3), transparent);
+            background-repeat: repeat;
+            background-size: 300px 150px;
+            animation: evidence-glow 25s linear infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes evidence-glow {
+            0%, 100% { opacity: 0.4; transform: translateX(0) rotate(0deg); }
+            50% { opacity: 0.8; transform: translateX(-20px) rotate(2deg); }
+        }
+        
+        @keyframes noir-flow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        @keyframes grain {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-1px, -1px) rotate(1deg); }
+            20% { transform: translate(1px, -2px) rotate(-1deg); }
+            30% { transform: translate(-2px, 1px) rotate(2deg); }
+            40% { transform: translate(2px, 2px) rotate(-2deg); }
+            50% { transform: translate(-1px, 2px) rotate(1deg); }
+            60% { transform: translate(1px, 1px) rotate(-1deg); }
+            70% { transform: translate(-2px, -1px) rotate(2deg); }
+            80% { transform: translate(2px, -2px) rotate(-2deg); }
+            90% { transform: translate(1px, -1px) rotate(1deg); }
+        }
+        
+        .glass-card {
+            background: rgba(255, 215, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn {
+            background: rgba(255, 215, 0, 0.2);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            color: #f5f5dc;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background: rgba(255, 215, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+        
+        .btn-primary {
+            background: rgba(139, 69, 19, 0.8);
+            border-color: rgba(160, 82, 45, 0.9);
+        }
+        
+        .btn-success {
+            background: rgba(34, 139, 34, 0.8);
+            border-color: rgba(50, 205, 50, 0.9);
+        }
+        
+        .btn-danger {
+            background: rgba(139, 0, 0, 0.8);
+            border-color: rgba(220, 20, 60, 0.9);
+        }
+        
+        .card {
+            background: rgba(44, 24, 16, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .card-evidence {
+            background: linear-gradient(135deg, rgba(139, 69, 19, 0.3), rgba(160, 82, 45, 0.2));
+            border-color: rgba(139, 69, 19, 0.4);
+        }
+        
+        .card-witness {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(218, 165, 32, 0.2));
+            border-color: rgba(255, 215, 0, 0.4);
+        }
+        
+        .card-timeline {
+            background: linear-gradient(135deg, rgba(34, 139, 34, 0.2), rgba(50, 205, 50, 0.2));
+            border-color: rgba(34, 139, 34, 0.4);
+        }
+        
+        .card-investigation {
+            background: linear-gradient(135deg, rgba(72, 61, 139, 0.2), rgba(106, 90, 205, 0.2));
+            border-color: rgba(72, 61, 139, 0.4);
+        }
+        
+        .card-mystery {
+            background: linear-gradient(135deg, rgba(139, 0, 139, 0.2), rgba(186, 85, 211, 0.2));
+            border-color: rgba(139, 0, 139, 0.4);
+        }
+        
+        .card-case-file {
+            background: linear-gradient(135deg, rgba(139, 0, 0, 0.2), rgba(220, 20, 60, 0.2));
+            border-color: rgba(139, 0, 0, 0.4);
+        }
+        
+        .badge {
+            background: rgba(255, 215, 0, 0.3);
+            color: #f5f5dc;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            border: 1px solid rgba(255, 215, 0, 0.4);
+        }
+        
+        .badge-success {
+            background: rgba(34, 139, 34, 0.8);
+            border-color: rgba(50, 205, 50, 0.9);
+        }
+        
+        .badge-error {
+            background: rgba(139, 0, 0, 0.8);
+            border-color: rgba(220, 20, 60, 0.9);
+        }
+        
+        .badge-info {
+            background: rgba(72, 61, 139, 0.8);
+            border-color: rgba(106, 90, 205, 0.9);
+        }
+        
+        .match-item {
+            background: rgba(44, 24, 16, 0.6);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #f5f5dc;
+        }
+        
+        .match-item:hover {
+            background: rgba(255, 215, 0, 0.2);
+            border-color: rgba(255, 215, 0, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .match-item.selected {
+            background: rgba(139, 69, 19, 0.5);
+            border-color: rgba(160, 82, 45, 0.8);
+        }
+        
+        .match-item.correct {
+            background: rgba(34, 139, 34, 0.5);
+            border-color: rgba(50, 205, 50, 0.8);
+        }
+        
+        .match-item.incorrect {
+            background: rgba(139, 0, 0, 0.5);
+            border-color: rgba(220, 20, 60, 0.8);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        .grid-cols-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+        
+        @media (min-width: 768px) {
+            .md\\:grid-cols-2 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .text-center { text-align: center; }
+        .text-white { color: #f5f5dc; }
+        .text-gold { color: #ffd700; }
+        .text-lg { font-size: 1.125rem; }
+        .text-xl { font-size: 1.25rem; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .text-4xl { font-size: 2.25rem; }
+        .text-6xl { font-size: 3.75rem; }
+        .font-bold { font-weight: bold; }
+        .mb-2 { margin-bottom: 0.5rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-12 { margin-bottom: 3rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mt-6 { margin-top: 1.5rem; }
+        .p-4 { padding: 1rem; }
+        .p-6 { padding: 1.5rem; }
+        .py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
+        .py-4 { padding-top: 1rem; padding-bottom: 1rem; }
+        .py-8 { padding-top: 2rem; padding-bottom: 2rem; }
+        .py-12 { padding-top: 3rem; padding-bottom: 3rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .justify-between { justify-content: space-between; }
+        .justify-start { justify-content: flex-start; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-3 { gap: 0.75rem; }
+        .gap-4 { gap: 1rem; }
+        .gap-6 { gap: 1.5rem; }
+        .w-4 { width: 1rem; }
+        .w-5 { width: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-full { width: 100%; }
+        .h-4 { height: 1rem; }
+        .h-5 { height: 1.25rem; }
+        .h-6 { height: 1.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .opacity-70 { opacity: 0.7; }
+        .opacity-80 { opacity: 0.8; }
+        .opacity-90 { opacity: 0.9; }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        const { createRoot } = ReactDOM;
+
+        // Icon components for Detective Theme
+        const MagnifyingGlass = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="M21 21l-4.35-4.35"></path>
+            </svg>
+        );
+
+        const FileText = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14,2 14,8 20,8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10,9 9,9 8,9"></polyline>
+            </svg>
+        );
+
+        const Briefcase = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+        );
+
+        const Clock = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12,6 12,12 16,14"></polyline>
+            </svg>
+        );
+
+        const Eye = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+        );
+
+        const Users = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+            </svg>
+        );
+
+        const MapPin = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                <circle cx="12" cy="10" r="3"></circle>
+            </svg>
+        );
+
+        const Fingerprint = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"></path>
+                <path d="M5 19.5C5.5 18 6 15 6 12c0-3.5 2.5-6 6-6s6 2.5 6 6c0 3 .5 6 1 7.5"></path>
+                <path d="M2 16h2c1 0 1-.5 2-1s1.5-1 2.5-1 1.5.5 2.5 1 1 1 2 1h2"></path>
+            </svg>
+        );
+
+        // Keep essential icons from original
+        const Star = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"></polygon>
+            </svg>
+        );
+
+        const Rocket = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M4.5 16.5c-1.5 1.5-2 4.5-2 4.5s3-0.5 4.5-2C8.5 17.5 8.5 16.5 7 15S4.5 16.5 4.5 16.5z"></path>
+                <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"></path>
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0"></path>
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"></path>
+            </svg>
+        );
+
+        const BookOpen = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M2 3h6c1.5 0 3 .5 4 2c1-1.5 2.5-2 4-2h6v14c0 .5-.5 1-1 1h-5c-1.5 0-3 .5-4 2c-1-1.5-2.5-2-4-2H3c-.5 0-1-.5-1-1V3z"></path>
+            </svg>
+        );
+
+        const Brain = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"></path>
+                <path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"></path>
+            </svg>
+        );
+
+        const Target = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+        );
+
+        const Volume2 = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19 11,5"/>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+        );
+
+        const VolumeX = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polygon points="11,5 6,9 2,9 2,15 6,15 11,19 11,5"/>
+                <line x1="23" y1="9" x2="17" y2="15"/>
+                <line x1="17" y1="9" x2="23" y2="15"/>
+            </svg>
+        );
+
+        const CheckCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22,4 12,14.01 9,11.01"></polyline>
+            </svg>
+        );
+
+        const XCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="15" y1="9" x2="9" y2="15"></line>
+                <line x1="9" y1="9" x2="15" y2="15"></line>
+            </svg>
+        );
+
+        const RotateCcw = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polyline points="1,4 1,10 7,10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+            </svg>
+        );
+
+        const Navigation = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
+            </svg>
+        );
+
+        const PlayCircle = ({ className = "w-6 h-6" }) => (
+            <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polygon points="10,8 16,12 10,16 10,8"></polygon>
+            </svg>
+        );
+
+        // Component: DBCooperDocumentary (Main Video Component)
+        const DBCooperDocumentary = ({ onComplete, isCompleted }) => {
+            const [currentMode, setCurrentMode] = useState('video'); // 'video', 'listen', 'read', 'questions'
+            const [hasWatchedVideo, setHasWatchedVideo] = useState(false);
+            const [hasListened, setHasListened] = useState(false);
+            const [hasRead, setHasRead] = useState(false);
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+            const [isPlaying, setIsPlaying] = useState(false);
+            
+            const [showChat, setShowChat] = useState(false);
+            const [chatMessages, setChatMessages] = useState([]);
+            const [newMessage, setNewMessage] = useState('');
+            const [studentName, setStudentName] = useState('');
+            const [showDiscussion, setShowDiscussion] = useState(false);
+
+            const dbCooperTranscript = `On November 24, 1971, a man identifying himself as Dan Cooper boarded Northwest Orient Flight 305 from Portland to Seattle. He was described as a middle-aged businessman wearing a business suit, white shirt, black tie, and white shirt. He ordered bourbon and soda, lit a cigarette, and handed flight attendant Florence Schaffner a note claiming he had a bomb.
+
+When Schaffner initially dismissed the note, Cooper opened his briefcase slightly, revealing what appeared to be dynamite, wires, and a battery. He then made his demands: $200,000 in twenty-dollar bills and four parachutes. This amount would be equivalent to over $1.3 million today.
+
+After the plane landed in Seattle, Cooper's demands were met. He released the 36 passengers but kept the crew aboard. He then instructed the pilot to fly toward Mexico City at low speed and altitude. During the flight, somewhere over the dense forests of southwestern Washington, Cooper lowered the aft stairs of the Boeing 727 and jumped into the stormy night.
+
+Cooper was never seen again. Despite one of the longest-running investigations in FBI history, spanning 45 years, he was never found. The case officially remains unsolved, though the FBI suspended active investigation in 2016.
+
+What makes D.B. Cooper unique among criminals is his polite demeanor and the fact that he never threatened anyone directly. Flight attendants described him as courteous and well-dressed. He even ordered another bourbon while waiting for his demands to be met.
+
+Several pieces of evidence have been found over the years. In 1980, a young boy found $5,800 in deteriorating twenty-dollar bills along the Columbia River, and the serial numbers matched Cooper's ransom money. In 2008, a parachute was found near Amboy, Washington, though experts couldn't definitively link it to Cooper.
+
+The case has inspired countless theories, books, movies, and documentaries. Some believe Cooper died in the jump due to the harsh weather conditions, his business attire, and the challenging terrain. Others maintain he survived and lived out his days with the stolen money.
+
+Weather conditions that night were particularly harsh, with rain, wind, and temperatures near freezing. Cooper jumped wearing only a business suit and a parachute, into complete darkness over heavily forested terrain. Aviation experts consider survival unlikely under these conditions.
+
+Yet Cooper's knowledge of aviation terminology and procedures suggests he may have had flight experience. He specifically requested older-model parachutes and knew details about the 727's capabilities that a typical passenger wouldn't know.
+
+The FBI received over 1,000 tips and investigated hundreds of suspects over the decades. Notable suspects included Skydiving instructor Sheridan Peterson, aerospace engineer Robert Rackstraw, and Richard Floyd McCoy, who executed a similar hijacking just months later.
+
+Today, D.B. Cooper remains the only unsolved air piracy case in American history. Whether he survived or perished, Cooper has become a folk hero, representing the romanticized notion of the gentleman bandit who outsmarted the system without hurting anyone.`;
+
+            const comprehensionQuestions = [
+                {
+                    id: 1,
+                    question: "What was the date of the D.B. Cooper hijacking?",
+                    options: ["November 24, 1971", "November 25, 1971", "December 24, 1971", "October 24, 1971"],
+                    correct: "November 24, 1971"
+                },
+                {
+                    id: 2,
+                    question: "How much money did Cooper demand?",
+                    options: ["$100,000", "$200,000", "$300,000", "$150,000"],
+                    correct: "$200,000"
+                },
+                {
+                    id: 3,
+                    question: "What type of aircraft was Flight 305?",
+                    options: ["Boeing 737", "Boeing 727", "Boeing 747", "Douglas DC-8"],
+                    correct: "Boeing 727"
+                },
+                {
+                    id: 4,
+                    question: "What was Cooper's drink of choice?",
+                    options: ["Whiskey and water", "Bourbon and soda", "Scotch on the rocks", "Gin and tonic"],
+                    correct: "Bourbon and soda"
+                },
+                {
+                    id: 5,
+                    question: "How much of the ransom money was found in 1980?",
+                    options: ["$3,800", "$5,800", "$7,800", "$9,800"],
+                    correct: "$5,800"
+                },
+                {
+                    id: 6,
+                    question: "When did the FBI suspend active investigation?",
+                    options: ["2014", "2015", "2016", "2017"],
+                    correct: "2016"
+                },
+                {
+                    id: 7,
+                    question: "Where was the ransom money found?",
+                    options: ["Snake River", "Columbia River", "Willamette River", "Yakima River"],
+                    correct: "Columbia River"
+                },
+                {
+                    id: 8,
+                    question: "What was Cooper wearing when he jumped?",
+                    options: ["Military uniform", "Casual clothes", "Business suit", "Flight suit"],
+                    correct: "Business suit"
+                },
+                {
+                    id: 9,
+                    question: "How many parachutes did Cooper request?",
+                    options: ["Two", "Three", "Four", "Five"],
+                    correct: "Four"
+                },
+                {
+                    id: 10,
+                    question: "What makes Cooper unique among hijackers?",
+                    options: ["He was violent", "He was polite and courteous", "He was young", "He demanded jewels"],
+                    correct: "He was polite and courteous"
+                }
+            ];
+
+            // Text-to-speech functionality
+            const speakText = () => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel(); // Cancel any ongoing speech
+                    const utterance = new SpeechSynthesisUtterance(dbCooperTranscript);
+                    utterance.rate = 0.8;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1.0;
+                    
+                    utterance.onstart = () => setIsPlaying(true);
+                    utterance.onend = () => {
+                        setIsPlaying(false);
+                        setHasListened(true);
+                    };
+                    utterance.onerror = () => {
+                        setIsPlaying(false);
+                        alert('Speech synthesis failed. Please try again.');
+                    };
+                    
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    alert('Your browser does not support text-to-speech functionality.');
+                }
+            };
+
+            const stopSpeech = () => {
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    setIsPlaying(false);
+                }
+            };
+
+            const handleModeChange = (newMode) => {
+                // Stop any playing audio when switching modes
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    setIsPlaying(false);
+                }
+                
+                if (newMode === 'listen') {
+                    setHasListened(true);
+                } else if (newMode === 'read') {
+                    setHasRead(true);
+                }
+                setCurrentMode(newMode);
+            };
+
+            const handleVideoEnd = () => {
+                setHasWatchedVideo(true);
+            };
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                comprehensionQuestions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                setIsFinished(true);
+                // Don't call onComplete here - let the user review results first
+                // onComplete will be called when they click "Continue to Next Exercise"
+            };
+
+            const resetExercise = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+                setIsFinished(false);
+                setCurrentMode('video');
+            };
+
+            // Classroom interaction functions
+            const sendChatMessage = () => {
+                if (newMessage.trim() && studentName.trim()) {
+                    const message = {
+                        id: Date.now(),
+                        student: studentName,
+                        message: newMessage,
+                        timestamp: new Date().toLocaleTimeString(),
+                        section: currentMode
+                    };
+                    setChatMessages(prev => [...prev, message]);
+                    setNewMessage('');
+                }
+            };
+
+            const toggleClassroomMode = () => {
+                setClassroomMode(!classroomMode);
+                if (!classroomMode) {
+                    const name = prompt("Enter your name for classroom discussion:");
+                    if (name) setStudentName(name);
+                }
+            };
+
+            const addDiscussionQuestion = (section) => {
+                const questions = {
+                    video: "What details from the video stood out most to you about Cooper's behavior?",
+                    listen: "What audio cues helped you understand the story better?",
+                    read: "Which facts from the transcript surprised you most?",
+                    questions: "Which question was most challenging and why?"
+                };
+                
+                const message = {
+                    id: Date.now(),
+                    student: "Discussion Prompt",
+                    message: questions[section] || "What are your thoughts on this section?",
+                    timestamp: new Date().toLocaleTimeString(),
+                    section: section,
+                    isPrompt: true
+                };
+                setChatMessages(prev => [...prev, message]);
+                setShowDiscussion(true);
+            };
+
+            const canProceedToQuestions = hasWatchedVideo && hasListened && hasRead;
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-3xl font-bold text-gold mb-6 text-center">The D.B. Cooper Case Files</h2>
+                        <p className="text-white opacity-90 mb-6 text-center">America's Only Unsolved Air Piracy Case</p>
+                        
+                        {/* Mode Selection */}
+                        <div className="flex justify-center gap-4 mb-6 flex-wrap">
+                            <button 
+                                className={`btn ${currentMode === 'video' ? 'btn-primary' : ''}`}
+                                onClick={() => handleModeChange('video')}
+                            >
+                                <PlayCircle className="w-4 h-4" />
+                                Watch Documentary
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'listen' ? 'btn-primary' : ''} ${!hasWatchedVideo ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('listen')}
+                                disabled={!hasWatchedVideo}
+                            >
+                                <Eye className="w-4 h-4" />
+                                Listen Only
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'read' ? 'btn-primary' : ''} ${!hasWatchedVideo ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('read')}
+                                disabled={!hasWatchedVideo}
+                            >
+                                <FileText className="w-4 h-4" />
+                                Read Only
+                            </button>
+                            <button 
+                                className={`btn ${currentMode === 'questions' ? 'btn-primary' : ''} ${!canProceedToQuestions ? 'opacity-50' : ''}`}
+                                onClick={() => handleModeChange('questions')}
+                                disabled={!canProceedToQuestions}
+                            >
+                                <Target className="w-4 h-4" />
+                                Investigation Quiz
+                            </button>
+                        </div>
+
+                        {/* Progress Indicators */}
+                        <div className="flex justify-center gap-4 mb-6">
+                            {hasWatchedVideo && <div className="badge badge-success">Video Watched</div>}
+                            {hasListened && <div className="badge badge-success">Audio Completed</div>}
+                            {hasRead && <div className="badge badge-success">Transcript Read</div>}
+                        </div>
+
+                        {/* Video Mode */}
+                        {currentMode === 'video' && (
+                            <div className="card-case-file">
+                                <h3 className="text-xl font-bold text-white mb-4">🎥 Documentary: The D.B. Cooper Mystery</h3>
+                                <p className="text-white opacity-90 mb-4">Watch this documentary to learn about the famous case.</p>
+                                <div style={{
+                                    position: 'relative',
+                                    paddingBottom: '33.75%', // 16:9 aspect ratio for desktop
+                                    height: 0,
+                                    overflow: 'hidden',
+                                    marginBottom: '1.5rem',
+                                    borderRadius: '8px',
+                                    boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                                    maxWidth: '800px', // Reasonable max width for desktop
+                                    width: '100%',
+                                    margin: '0 auto 1.5rem auto' // Center the video
+                                }}>
+                                    <iframe
+                                        style={{
+                                            position: 'absolute',
+                                            top: 0,
+                                            left: 0,
+                                            width: '100%',
+                                            height: '100%',
+                                            border: 'none'
+                                        }}
+                                        src="https://www.youtube.com/embed/CbUjuwhQPKs"
+                                        title="D.B. Cooper Documentary"
+                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                        allowFullScreen
+                                        onLoad={handleVideoEnd}
+                                    ></iframe>
+                                </div>
+                                <div className="text-center">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            handleVideoEnd();
+                                        }}
+                                    >
+                                        ✅ Mark Video as Watched
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Listen Only Mode */}
+                        {currentMode === 'listen' && (
+                            <div className="card-witness">
+                                <h3 className="text-xl font-bold text-white mb-4">🎧 Audio Investigation</h3>
+                                <p className="text-white opacity-90 mb-4">Listen carefully to the documentary audio. The video is hidden to focus your attention on listening comprehension.</p>
+                                
+                                <div className="bg-black bg-opacity-50 p-6 rounded-lg mb-6">
+                                    <div className="text-center">
+                                        <div className="text-white opacity-70 italic mb-4">Video hidden during listening mode</div>
+                                        <div className="text-white opacity-70 text-sm mb-6">Focus on listening to the documentary audio only</div>
+                                        
+                                        {/* Hidden video for audio playback */}
+                                        <div style={{ display: 'none' }}>
+                                            <iframe
+                                                id="audioPlayer"
+                                                src="https://www.youtube.com/embed/CbUjuwhQPKs?autoplay=0&controls=0"
+                                                title="D.B. Cooper Documentary Audio"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                                width="100"
+                                                height="100"
+                                            ></iframe>
+                                        </div>
+                                        
+                                        <div className="flex justify-center gap-4 mb-4">
+                                            {!isPlaying ? (
+                                                <button 
+                                                    className="btn btn-success flex items-center gap-2"
+                                                    onClick={() => {
+                                                        setIsPlaying(true);
+                                                        // Update iframe to autoplay
+                                                        const iframe = document.getElementById('audioPlayer');
+                                                        if (iframe) {
+                                                            iframe.src = "https://www.youtube.com/embed/CbUjuwhQPKs?autoplay=1&controls=0";
+                                                        }
+                                                    }}
+                                                >
+                                                    <Volume2 className="w-5 h-5" />
+                                                    Play Audio
+                                                </button>
+                                            ) : (
+                                                <button 
+                                                    className="btn btn-danger flex items-center gap-2"
+                                                    onClick={() => {
+                                                        setIsPlaying(false);
+                                                        // Stop audio by removing autoplay
+                                                        const iframe = document.getElementById('audioPlayer');
+                                                        if (iframe) {
+                                                            iframe.src = "https://www.youtube.com/embed/CbUjuwhQPKs?autoplay=0&controls=0";
+                                                        }
+                                                    }}
+                                                >
+                                                    <VolumeX className="w-5 h-5" />
+                                                    Stop Audio
+                                                </button>
+                                            )}
+                                        </div>
+                                        
+                                        {isPlaying && (
+                                            <div className="text-gold font-bold text-lg animate-pulse">
+                                                🔊 Documentary Audio Playing...
+                                            </div>
+                                        )}
+                                        
+                                        {hasListened && !isPlaying && (
+                                            <div className="text-green-400 font-bold">
+                                                ✅ Audio Completed
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                                
+                                <div className="text-center">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            setHasListened(true);
+                                        }}
+                                    >
+                                        Mark Listening Complete
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Read Only Mode */}
+                        {currentMode === 'read' && (
+                            <div className="card-timeline">
+                                <h3 className="text-xl font-bold text-white mb-4">📄 Case File Transcript</h3>
+                                <p className="text-white opacity-90 mb-4">Read the complete case file carefully. Audio is disabled to focus on reading comprehension.</p>
+                                <div className="card" style={{
+                                    maxHeight: '400px',
+                                    overflowY: 'auto',
+                                    fontSize: '0.95rem',
+                                    lineHeight: '1.6'
+                                }}>
+                                    <div className="text-white opacity-90" style={{whiteSpace: 'pre-line'}}>
+                                        {dbCooperTranscript}
+                                    </div>
+                                </div>
+                                <div className="text-center mt-4">
+                                    <button 
+                                        className="btn btn-success"
+                                        onClick={() => {
+                                            setHasRead(true);
+                                        }}
+                                    >
+                                        Mark Reading Complete
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Investigation Quiz */}
+                        {currentMode === 'questions' && !isFinished && (
+                            <div className="card-investigation">
+                                <h3 className="text-xl font-bold text-white mb-6">🔍 Investigation Comprehension Quiz</h3>
+                                <p className="text-white opacity-90 mb-6">Test your knowledge of the D.B. Cooper case based on what you've learned.</p>
+                                
+                                <div className="space-y-4">
+                                    {comprehensionQuestions.map((question, index) => (
+                                        <div key={question.id} className="card">
+                                            <h4 className="text-lg font-bold text-white mb-4">
+                                                Question {index + 1}: {question.question}
+                                            </h4>
+                                            <div className="space-y-3">
+                                                {question.options.map((option, optionIndex) => {
+                                                    const letter = String.fromCharCode(65 + optionIndex);
+                                                    return (
+                                                        <button
+                                                            key={optionIndex}
+                                                            className={`btn w-full text-left justify-start ${
+                                                                selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                            } ${showResults ? (
+                                                                option === question.correct ? 'btn-success' : 
+                                                                selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                            ) : ''}`}
+                                                            onClick={() => handleAnswerSelect(question.id, option)}
+                                                            disabled={showResults}
+                                                        >
+                                                            <span className="font-bold mr-3">{letter}.</span>
+                                                            {option}
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                            {showResults && (
+                                                <div className="mt-3 text-white opacity-80 text-sm">
+                                                    {selectedAnswers[question.id] === question.correct ? 
+                                                        <div className="flex items-center text-green-400">
+                                                            <CheckCircle className="w-4 h-4 mr-2" />
+                                                            Correct!
+                                                        </div> : 
+                                                        <div className="flex items-center text-red-400">
+                                                            <XCircle className="w-4 h-4 mr-2" />
+                                                            Incorrect. The correct answer is: {question.correct}
+                                                        </div>
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center mt-6">
+                                    {!showResults && (
+                                        <button 
+                                            className="btn btn-primary" 
+                                            onClick={checkAnswers}
+                                            disabled={Object.keys(selectedAnswers).length < comprehensionQuestions.length}
+                                        >
+                                            Submit Investigation Report
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <button className="btn" onClick={resetExercise}>
+                                            <RotateCcw className="w-4 h-4" />
+                                            Restart Investigation
+                                        </button>
+                                    )}
+                                    {showResults && (
+                                        <div className="badge badge-success">
+                                            Investigation Score: {score}/{comprehensionQuestions.length}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Final Results */}
+                        {isFinished && (
+                            <div className="card-evidence text-center">
+                                <h3 className="text-2xl font-bold text-gold mb-4">Investigation Complete!</h3>
+                                <p className="text-white mb-4">
+                                    You've successfully completed the D.B. Cooper case study.
+                                </p>
+                                <div className="badge badge-success text-lg mb-4">
+                                    Final Score: {score}/{comprehensionQuestions.length}
+                                </div>
+                                <p className="text-white opacity-80 mb-6">
+                                    Proceed to additional investigation exercises to continue building your case knowledge.
+                                </p>
+                                <button 
+                                    className="btn btn-primary text-lg px-8 py-3"
+                                    onClick={() => {
+                                        console.log('Moving to next exercise with score:', score);
+                                        onComplete(score);
+                                    }}
+                                >
+                                    Continue to Next Exercise →
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+        // Component: EvidenceMatching (Replace old StudyingUniverse)
+        const EvidenceMatching = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const evidenceTerms = [
+                'hijacking', 'ransom', 'parachute', 'briefcase',
+                'boeing 727', 'flight attendant', 'fbi investigation', 'skydiving'
+            ];
+
+            const descriptions = [
+                'The illegal seizure of an aircraft by force or threat',
+                'Money demanded for the release of a captive or for not carrying out a threat',
+                'A fabric canopy used to slow descent from an aircraft',
+                'A rectangular carrying case used for business documents',
+                'The specific aircraft model used in the Cooper case',
+                'A cabin crew member who serves passengers during flight',
+                'A federal investigation into criminal activity',
+                'The sport of jumping from aircraft with a parachute'
+            ];
+
+            const correctAnswers = {
+                'hijacking': 'The illegal seizure of an aircraft by force or threat',
+                'ransom': 'Money demanded for the release of a captive or for not carrying out a threat',
+                'parachute': 'A fabric canopy used to slow descent from an aircraft',
+                'briefcase': 'A rectangular carrying case used for business documents',
+                'boeing 727': 'The specific aircraft model used in the Cooper case',
+                'flight attendant': 'A cabin crew member who serves passengers during flight',
+                'fbi investigation': 'A federal investigation into criminal activity',
+                'skydiving': 'The sport of jumping from aircraft with a parachute'
+            };
+
+            const handleAnswerSelect = (term, description) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [term]: description
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                Object.keys(correctAnswers).forEach(term => {
+                    if (selectedAnswers[term] === correctAnswers[term]) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-evidence">
+                        <h2 className="text-2xl font-bold text-gold mb-6">🔍 Evidence Matching</h2>
+                        <p className="text-white opacity-90 mb-6">Match each investigation term with its correct definition.</p>
+                        
+                        <div className="grid grid-cols-2 gap-6">
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4">Investigation Terms</h3>
+                                {evidenceTerms.map(term => (
+                                    <div
+                                        key={term}
+                                        className={`match-item ${selectedAnswers[term] ? 'selected' : ''} ${
+                                            showResults ? (selectedAnswers[term] === correctAnswers[term] ? 'correct' : 'incorrect') : ''
+                                        }`}
+                                        onClick={() => !showResults && setSelectedAnswers(prev => ({ ...prev, selectedTerm: term }))}
+                                    >
+                                        <MagnifyingGlass className="w-4 h-4 inline mr-2" />
+                                        {term}
+                                        {showResults && (
+                                            <span className="ml-2">
+                                                {selectedAnswers[term] === correctAnswers[term] ? 
+                                                    <CheckCircle className="w-4 h-4" /> : 
+                                                    <XCircle className="w-4 h-4" />
+                                                }
+                                            </span>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div>
+                                <h3 className="text-xl font-bold text-white mb-4">Definitions</h3>
+                                {descriptions.map(description => (
+                                    <div
+                                        key={description}
+                                        className={`match-item ${
+                                            selectedAnswers.selectedTerm ? '' : 'opacity-70'
+                                        }`}
+                                        onClick={() => selectedAnswers.selectedTerm && handleAnswerSelect(selectedAnswers.selectedTerm, description)}
+                                    >
+                                        {description}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < evidenceTerms.length}
+                                    >
+                                        <Fingerprint className="w-4 h-4" />
+                                        Analyze Evidence
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Re-examine Evidence
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Evidence Score: {score}/{evidenceTerms.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: WondersUniverse (Multiple Choice Quiz)
+        const WondersUniverse = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "What is an asteroid?",
+                    options: [
+                        "A large rock that moves around in space",
+                        "A bright object in space that has a tail made from gas and dust",
+                        "A group of stars that make a pattern in the sky"
+                    ],
+                    correct: "A large rock that moves around in space"
+                },
+                {
+                    id: 2,
+                    question: "What is a black hole?",
+                    options: [
+                        "A large hole on the surface of a planet made by something that hit it",
+                        "An area in space where gravity is so strong that nothing can escape from it",
+                        "A short period when all or part of the Sun or Moon is dark"
+                    ],
+                    correct: "An area in space where gravity is so strong that nothing can escape from it"
+                },
+                {
+                    id: 3,
+                    question: "What is a comet?",
+                    options: [
+                        "A large, round object in space that moves around a star",
+                        "A group of stars and other substances",
+                        "A bright object in space that has a tail made from gas and dust"
+                    ],
+                    correct: "A bright object in space that has a tail made from gas and dust"
+                },
+                {
+                    id: 4,
+                    question: "What is a constellation?",
+                    options: [
+                        "A group of stars that make a pattern in the sky",
+                        "A large rock that moves around in space",
+                        "An area in space where gravity is so strong that nothing can escape from it"
+                    ],
+                    correct: "A group of stars that make a pattern in the sky"
+                },
+                {
+                    id: 5,
+                    question: "What is a crater?",
+                    options: [
+                        "A bright object in space that has a tail made from gas and dust",
+                        "A large hole on the surface of a planet made by something that hit it",
+                        "A group of stars and other substances"
+                    ],
+                    correct: "A large hole on the surface of a planet made by something that hit it"
+                },
+                {
+                    id: 6,
+                    question: "What is an eclipse?",
+                    options: [
+                        "A large, round object in space that moves around a star",
+                        "A group of stars that make a pattern in the sky",
+                        "A short period when all or part of the Sun or Moon is dark"
+                    ],
+                    correct: "A short period when all or part of the Sun or Moon is dark"
+                },
+                {
+                    id: 7,
+                    question: "What is a galaxy?",
+                    options: [
+                        "A group of stars and other substances",
+                        "A large hole on the surface of a planet made by something that hit it",
+                        "A bright object in space that has a tail made from gas and dust"
+                    ],
+                    correct: "A group of stars and other substances"
+                },
+                {
+                    id: 8,
+                    question: "What is a planet?",
+                    options: [
+                        "A group of stars that make a pattern in the sky",
+                        "A large, round object in space that moves around a star",
+                        "An area in space where gravity is so strong that nothing can escape from it"
+                    ],
+                    correct: "A large, round object in space that moves around a star"
+                }
+            ];
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                questions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-2xl font-bold text-white mb-6">Wonders of the Universe - Multiple Choice Quiz</h2>
+                        <p className="text-white opacity-90 mb-6">Choose the correct definition for each cosmic phenomenon.</p>
+                        
+                        <div className="space-y-4">
+                            {questions.map((question, index) => (
+                                <div key={question.id} className="card">
+                                    <h3 className="text-lg font-bold text-white mb-4">
+                                        Question {index + 1}: {question.question}
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {question.options.map((option, optionIndex) => {
+                                            const letter = String.fromCharCode(65 + optionIndex); // A, B, C
+                                            return (
+                                                <button
+                                                    key={optionIndex}
+                                                    className={`btn w-full text-left justify-start ${
+                                                        selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                    } ${showResults ? (
+                                                        option === question.correct ? 'btn-success' : 
+                                                        selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                    ) : ''}`}
+                                                    onClick={() => handleAnswerSelect(question.id, option)}
+                                                    disabled={showResults}
+                                                >
+                                                    <span className="font-bold mr-3">{letter}.</span>
+                                                    {option}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {showResults && (
+                                        <div className="mt-3 text-white opacity-80 text-sm">
+                                            {selectedAnswers[question.id] === question.correct ? 
+                                                <div className="flex items-center text-green-400">
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Correct!
+                                                </div> : 
+                                                <div className="flex items-center text-red-400">
+                                                    <XCircle className="w-4 h-4 mr-2" />
+                                                    Incorrect. The correct answer is: {question.correct}
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < questions.length}
+                                    >
+                                        Check Answers
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Try Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Score: {score}/{questions.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: ReadingQuiz
+        const ReadingQuiz = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const readingText = `The universe is everything that exists, which includes all the planets, stars, galaxies and other physical things that are in space.
+
+The first models of the universe were developed by Greek and Indian philosophers, which put Earth at the center. Later, when data was more accurate, Nicolaus Copernicus created a model with the Sun at the center of the Solar System.
+
+Eventually, after more improvements, scientists were able to say that our Solar System is in the Milky Way galaxy, which is one of many galaxies in the universe.
+
+The Big Bang theory explains how many people believe the universe began. In the beginning, the universe was tiny and then expanded over billions of years to the size it is today. Giant clouds came together during this process to form galaxies, stars and other physical things in the universe.
+
+It is not known exactly how big the universe is. Information that is sent from Earth may never reach some parts of space, because it expands faster than light can travel across it.
+
+However, astronomers have calculated that the universe is 13.8 billion years old.`;
+
+            const questions = [
+                {
+                    id: 1,
+                    statement: "The first models of the universe were created by Chinese astronomers.",
+                    correct: false,
+                    explanation: "They were developed by Greek and Indian philosophers."
+                },
+                {
+                    id: 2,
+                    statement: "Nicolaus Copernicus put the Sun at the center of the Solar System.",
+                    correct: true,
+                    explanation: "Yes, Copernicus created a heliocentric model with the Sun at the center."
+                },
+                {
+                    id: 3,
+                    statement: "Our Solar System is in the Milky Way galaxy.",
+                    correct: true,
+                    explanation: "Correct, our Solar System is located within the Milky Way galaxy."
+                },
+                {
+                    id: 4,
+                    statement: "The Big Bang theory says the universe started large and got smaller.",
+                    correct: false,
+                    explanation: "The Big Bang theory states the universe started tiny and expanded over time."
+                },
+                {
+                    id: 5,
+                    statement: "The universe is exactly 13.8 billion years old.",
+                    correct: true,
+                    explanation: "Yes, astronomers have calculated the universe to be 13.8 billion years old."
+                }
+            ];
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                questions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-2xl font-bold text-white mb-6">Reading Comprehension Quiz</h2>
+                        
+                        <div className="card mb-6">
+                            <h3 className="text-lg font-bold text-white mb-4">Read the text below:</h3>
+                            <div className="text-white opacity-90 leading-relaxed" style={{whiteSpace: 'pre-line'}}>
+                                {readingText}
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            {questions.map(question => (
+                                <div key={question.id} className="card">
+                                    <p className="text-white mb-4">{question.statement}</p>
+                                    <div className="flex gap-4 mb-4">
+                                        <button
+                                            className={`btn ${selectedAnswers[question.id] === true ? 'btn-primary' : ''} ${
+                                                showResults ? (question.correct === true ? 'btn-success' : 'btn-danger') : ''
+                                            }`}
+                                            onClick={() => handleAnswerSelect(question.id, true)}
+                                        >
+                                            True
+                                        </button>
+                                        <button
+                                            className={`btn ${selectedAnswers[question.id] === false ? 'btn-primary' : ''} ${
+                                                showResults ? (question.correct === false ? 'btn-success' : 'btn-danger') : ''
+                                            }`}
+                                            onClick={() => handleAnswerSelect(question.id, false)}
+                                        >
+                                            False
+                                        </button>
+                                    </div>
+                                    {showResults && (
+                                        <div className="text-white opacity-80 text-sm">
+                                            {selectedAnswers[question.id] === question.correct ? 
+                                                <CheckCircle className="w-4 h-4 inline mr-2" /> : 
+                                                <XCircle className="w-4 h-4 inline mr-2" />
+                                            }
+                                            {question.explanation}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < questions.length}
+                                    >
+                                        Check Answers
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Try Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Score: {score}/{questions.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: UniversePrepositions
+        const UniversePrepositions = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const sentences = [
+                { id: 1, text: "The rocket launched _______ the launch pad.", options: ["from", "to", "under", "beside"], answer: "from" },
+                { id: 2, text: "The astronaut floated _______ the space station.", options: ["inside", "outside", "below", "above"], answer: "inside" },
+                { id: 3, text: "The satellite orbits _______ the Earth.", options: ["around", "through", "under", "beside"], answer: "around" },
+                { id: 4, text: "The comet traveled _______ the solar system.", options: ["through", "around", "under", "beside"], answer: "through" },
+                { id: 5, text: "The moon is visible _______ the night sky.", options: ["in", "on", "under", "beside"], answer: "in" },
+                { id: 6, text: "The astronauts walked _______ the lunar surface.", options: ["on", "in", "under", "above"], answer: "on" },
+                { id: 7, text: "The spaceship landed _______ Mars.", options: ["on", "in", "under", "above"], answer: "on" },
+                { id: 8, text: "The telescope pointed _______ the stars.", options: ["at", "in", "under", "beside"], answer: "at" },
+                { id: 9, text: "The space probe flew _______ Jupiter.", options: ["past", "in", "under", "beside"], answer: "past" },
+                { id: 10, text: "The galaxy is located _______ deep space.", options: ["in", "on", "under", "above"], answer: "in" }
+            ];
+
+            const handleAnswerSelect = (sentenceId, preposition) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [sentenceId]: preposition
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                sentences.forEach(sentence => {
+                    if (selectedAnswers[sentence.id] === sentence.answer) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-2xl font-bold text-white mb-6">Universe Prepositions Exercise</h2>
+                        <p className="text-white opacity-90 mb-6">Choose the correct preposition to complete each sentence about space.</p>
+                        
+                        <div className="space-y-4">
+                            {sentences.map(sentence => (
+                                <div key={sentence.id} className="card">
+                                    <p className="text-white mb-4 text-lg">{sentence.text}</p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {sentence.options.map(option => (
+                                            <button
+                                                key={option}
+                                                className={`btn ${selectedAnswers[sentence.id] === option ? 'btn-primary' : ''} ${
+                                                    showResults ? (
+                                                        option === sentence.answer ? 'btn-success' : 
+                                                        selectedAnswers[sentence.id] === option ? 'btn-danger' : ''
+                                                    ) : ''
+                                                }`}
+                                                onClick={() => handleAnswerSelect(sentence.id, option)}
+                                                disabled={showResults}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {showResults && (
+                                        <div className="mt-3 text-white opacity-80 text-sm">
+                                            {selectedAnswers[sentence.id] === sentence.answer ? 
+                                                <CheckCircle className="w-4 h-4 inline mr-2 text-green-400" /> : 
+                                                <XCircle className="w-4 h-4 inline mr-2 text-red-400" />
+                                            }
+                                            {selectedAnswers[sentence.id] === sentence.answer ? 
+                                                "Correct!" : 
+                                                `Incorrect. The correct answer is: ${sentence.answer}`
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < sentences.length}
+                                    >
+                                        Check Answers
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Try Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Score: {score}/{sentences.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: UniverseAudioVideo
+        const UniverseAudioVideo = ({ onComplete, isCompleted }) => {
+            const [currentQuestion, setCurrentQuestion] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState('');
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+            const [isFinished, setIsFinished] = useState(false);
+
+            const comprehensionQuestions = [
+                {
+                    question: "According to the video, what is the approximate age of the universe?",
+                    options: ["13.8 billion years", "14.2 billion years", "12.5 billion years", "15.1 billion years"],
+                    correct: "13.8 billion years"
+                },
+                {
+                    question: "What event is described as the beginning of the universe?",
+                    options: ["The Big Crunch", "The Big Bang", "The Cosmic Collision", "The Stellar Formation"],
+                    correct: "The Big Bang"
+                },
+                {
+                    question: "What makes up most of the universe according to current understanding?",
+                    options: ["Stars and planets", "Dark matter and dark energy", "Gas clouds", "Black holes"],
+                    correct: "Dark matter and dark energy"
+                }
+            ];
+
+            const videoTranscript = `Welcome to our journey through the cosmos! The universe is an incredible place filled with wonders beyond our imagination.
+
+Our universe began approximately 13.8 billion years ago with an event we call the Big Bang. This wasn't an explosion in space, but rather an expansion of space itself. In the first moments after the Big Bang, the universe was incredibly hot and dense.
+
+As the universe expanded and cooled, the first particles formed, then atoms, and eventually the first stars. These early stars were massive and short-lived, ending their lives in spectacular supernova explosions that scattered heavy elements throughout space.
+
+Today, we know that the visible matter we can see - stars, planets, galaxies - makes up only about 5% of the universe. The rest consists of dark matter (about 27%) and dark energy (about 68%), mysterious components that we're still trying to understand.
+
+Our observable universe contains billions of galaxies, each with billions of stars. Some of these stars have planets orbiting them, and we've discovered thousands of these exoplanets. The search for life beyond Earth continues to be one of the most exciting frontiers in astronomy.
+
+From the smallest particles to the largest galactic structures, the universe operates according to the fundamental laws of physics. Gravity shapes the cosmic web, electromagnetic forces power the stars, and quantum mechanics governs the behavior of matter at the smallest scales.
+
+The universe continues to expand, and its ultimate fate remains one of the great mysteries of cosmology. Will it expand forever, or will gravity eventually pull everything back together? Only time and continued scientific discovery will tell.`;
+
+            const handleAnswerSelect = (answer) => {
+                if (showResults) return;
+                setSelectedAnswer(answer);
+            };
+
+            const checkAnswer = () => {
+                const isCorrect = selectedAnswer === comprehensionQuestions[currentQuestion].correct;
+                if (isCorrect) {
+                    setScore(score + 1);
+                }
+                setShowResults(true);
+                
+                if (currentQuestion < comprehensionQuestions.length - 1) {
+                    setTimeout(() => {
+                        setCurrentQuestion(currentQuestion + 1);
+                        setSelectedAnswer('');
+                        setShowResults(false);
+                    }, 2000);
+                } else {
+                    setTimeout(() => {
+                        setIsFinished(true);
+                        onComplete(score + (isCorrect ? 1 : 0));
+                    }, 2000);
+                }
+            };
+
+            const resetExercise = () => {
+                setCurrentQuestion(0);
+                setSelectedAnswer('');
+                setShowResults(false);
+                setScore(0);
+                setIsFinished(false);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-2xl font-bold text-white mb-6">Universe Documentary</h2>
+                        <p className="text-white opacity-90 mb-6">Watch the video and answer comprehension questions</p>
+                        
+                        {/* YouTube Video Embed */}
+                        <div style={{
+                            position: 'relative',
+                            paddingBottom: '33.75%', // 16:9 aspect ratio for desktop
+                            height: 0,
+                            overflow: 'hidden',
+                            marginBottom: '2rem',
+                            borderRadius: '8px',
+                            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
+                            maxWidth: '800px', // Limit max width for desktop
+                            width: '100%',
+                            margin: '0 auto 2rem auto' // Center the video
+                        }}>
+                            <iframe
+                                style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    height: '100%',
+                                    border: 'none'
+                                }}
+                                src="https://www.youtube.com/embed/HdPzOWlLrbE"
+                                title="The Universe Explained"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                            ></iframe>
+                        </div>
+
+                        {/* Transcript Section */}
+                        <div className="card mb-6">
+                            <h3 className="text-lg font-bold text-white mb-4">Video Transcript</h3>
+                            <div className="text-white opacity-90 leading-relaxed" style={{
+                                maxHeight: '200px',
+                                overflowY: 'auto',
+                                fontSize: '0.9rem',
+                                whiteSpace: 'pre-line'
+                            }}>
+                                {videoTranscript}
+                            </div>
+                        </div>
+
+                        {/* Comprehension Questions */}
+                        {!isFinished && (
+                            <div className="card">
+                                <h3 className="text-xl font-bold text-white mb-4">
+                                    Question {currentQuestion + 1} of {comprehensionQuestions.length}
+                                </h3>
+                                <p className="text-white mb-4 text-lg">{comprehensionQuestions[currentQuestion].question}</p>
+                                
+                                <div className="space-y-3 mb-6">
+                                    {comprehensionQuestions[currentQuestion].options.map((option, index) => (
+                                        <button
+                                            key={index}
+                                            className={`btn w-full text-left justify-start ${
+                                                selectedAnswer === option ? 'btn-primary' : ''
+                                            } ${showResults ? (
+                                                option === comprehensionQuestions[currentQuestion].correct ? 'btn-success' : 
+                                                selectedAnswer === option ? 'btn-danger' : ''
+                                            ) : ''}`}
+                                            onClick={() => handleAnswerSelect(option)}
+                                            disabled={showResults}
+                                        >
+                                            {option}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="flex justify-between items-center">
+                                    <div className="flex gap-4">
+                                        {!showResults && (
+                                            <button 
+                                                className="btn btn-primary" 
+                                                onClick={checkAnswer}
+                                                disabled={!selectedAnswer}
+                                            >
+                                                Check Answer
+                                            </button>
+                                        )}
+                                    </div>
+                                    
+                                    {showResults && (
+                                        <div className="flex items-center gap-4">
+                                            {selectedAnswer === comprehensionQuestions[currentQuestion].correct ? (
+                                                <div className="badge badge-success">
+                                                    <CheckCircle className="w-4 h-4" />
+                                                    Correct!
+                                                </div>
+                                            ) : (
+                                                <div className="badge badge-error">
+                                                    <XCircle className="w-4 h-4" />
+                                                    Incorrect. Answer: {comprehensionQuestions[currentQuestion].correct}
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
+                        {isFinished && (
+                            <div className="card text-center">
+                                <h3 className="text-xl font-bold text-white mb-4">Exercise Complete!</h3>
+                                <div className="badge badge-success mb-4">
+                                    Final Score: {score}/{comprehensionQuestions.length}
+                                </div>
+                                <button className="btn" onClick={resetExercise}>
+                                    <RotateCcw className="w-4 h-4" />
+                                    Watch Again
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: UniverseVerbs
+        const UniverseVerbs = ({ onComplete, isCompleted }) => {
+            const [partAAnswers, setPartAAnswers] = useState({});
+            const [partBAnswers, setPartBAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const verbs = ['collide', 'expand', 'launch', 'form', 'orbit', 'spin'];
+            const meanings = [
+                'quickly turn around and around',
+                'come together with force',
+                'move around something',
+                'increase in size',
+                'send something into space',
+                'begin to exist'
+            ];
+
+            const partACorrectAnswers = {
+                'collide': 'come together with force',
+                'expand': 'increase in size',
+                'launch': 'send something into space',
+                'form': 'begin to exist',
+                'orbit': 'move around something',
+                'spin': 'quickly turn around and around'
+            };
+
+            const sentences = [
+                { id: 1, text: "The asteroid will _______ with the planet.", answer: "collide" },
+                { id: 2, text: "The universe continues to _______ every day.", answer: "expand" },
+                { id: 3, text: "NASA will _______ the rocket tomorrow.", answer: "launch" },
+                { id: 4, text: "New stars _______ from gas clouds.", answer: "form" },
+                { id: 5, text: "The Earth will _______ around the Sun.", answer: "orbit" },
+                { id: 6, text: "The planet will _______ on its axis.", answer: "spin" }
+            ];
+
+            const handlePartASelect = (verb, meaning) => {
+                if (showResults) return;
+                setPartAAnswers(prev => ({
+                    ...prev,
+                    [verb]: meaning
+                }));
+            };
+
+            const handlePartBSelect = (sentenceId, verb) => {
+                if (showResults) return;
+                setPartBAnswers(prev => ({
+                    ...prev,
+                    [sentenceId]: verb
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                
+                // Check Part A
+                Object.keys(partACorrectAnswers).forEach(verb => {
+                    if (partAAnswers[verb] === partACorrectAnswers[verb]) {
+                        correctCount++;
+                    }
+                });
+
+                // Check Part B
+                sentences.forEach(sentence => {
+                    if (partBAnswers[sentence.id] === sentence.answer) {
+                        correctCount++;
+                    }
+                });
+
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setPartAAnswers({});
+                setPartBAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card">
+                        <h2 className="text-2xl font-bold text-white mb-6">Universe Verbs Exercise</h2>
+                        
+                        {/* Part A */}
+                        <div className="card mb-6">
+                            <h3 className="text-xl font-bold text-white mb-4">Part A: Match verbs to meanings</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                    <h4 className="text-lg font-bold text-white mb-4">Verbs</h4>
+                                    {verbs.map(verb => (
+                                        <div
+                                            key={verb}
+                                            className={`match-item ${partAAnswers[verb] ? 'selected' : ''} ${
+                                                showResults ? (partAAnswers[verb] === partACorrectAnswers[verb] ? 'correct' : 'incorrect') : ''
+                                            }`}
+                                            onClick={() => !showResults && setPartAAnswers(prev => ({ ...prev, selectedVerb: verb }))}
+                                        >
+                                            {verb}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div>
+                                    <h4 className="text-lg font-bold text-white mb-4">Meanings</h4>
+                                    {meanings.map(meaning => (
+                                        <div
+                                            key={meaning}
+                                            className={`match-item ${
+                                                partAAnswers.selectedVerb ? '' : 'opacity-70'
+                                            }`}
+                                            onClick={() => partAAnswers.selectedVerb && handlePartASelect(partAAnswers.selectedVerb, meaning)}
+                                        >
+                                            {meaning}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Part B */}
+                        <div className="card">
+                            <h3 className="text-xl font-bold text-white mb-4">Part B: Complete the sentences</h3>
+                            <div className="space-y-4">
+                                {sentences.map(sentence => (
+                                    <div key={sentence.id} className="card">
+                                        <p className="text-white mb-4">{sentence.text}</p>
+                                        <div className="flex gap-2 flex-wrap">
+                                            {verbs.map(verb => (
+                                                <button
+                                                    key={verb}
+                                                    className={`btn ${partBAnswers[sentence.id] === verb ? 'btn-primary' : ''} ${
+                                                        showResults ? (sentence.answer === verb ? 'btn-success' : 'btn-danger') : ''
+                                                    }`}
+                                                    onClick={() => handlePartBSelect(sentence.id, verb)}
+                                                >
+                                                    {verb}
+                                                </button>
+                                            ))}
+                                        </div>
+                                        {showResults && (
+                                            <div className="mt-2 text-white opacity-80 text-sm">
+                                                {partBAnswers[sentence.id] === sentence.answer ? 
+                                                    <CheckCircle className="w-4 h-4 inline mr-2" /> : 
+                                                    <XCircle className="w-4 h-4 inline mr-2" />
+                                                }
+                                                Correct answer: {sentence.answer}
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(partAAnswers).length < verbs.length || Object.keys(partBAnswers).length < sentences.length}
+                                    >
+                                        Check Answers
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Try Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Score: {score}/{verbs.length + sentences.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: CaseFileAnalysis
+        const CaseFileAnalysis = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const caseFileText = `FBI CASE FILE - NORJAK
+CLASSIFICATION: UNSOLVED
+
+SUBJECT: Unknown male, alias "Dan Cooper"
+DATE OF INCIDENT: November 24, 1971
+AIRCRAFT: Northwest Orient Flight 305, Boeing 727-100
+ROUTE: Portland, Oregon to Seattle, Washington
+
+WITNESS STATEMENT - Florence Schaffner (Flight Attendant):
+"The subject was well-dressed, approximately 45 years old, 6 feet tall, 170-180 pounds. He wore a business suit, white shirt, black tie, and appeared to be a businessman. He was polite and calm throughout the incident. When I initially ignored his note, he quietly said 'Miss, you'd better look at that note. I have a bomb.'"
+
+EVIDENCE COLLECTED:
+- Bourbon glass with fingerprints (partial, unusable)
+- Black clip-on tie left on seat
+- Mother-of-pearl tie clip
+- Paper bag from hijacker's personal items
+- Cigarette butts (brand: Raleigh filter-tipped)
+
+RANSOM DEMANDS:
+- $200,000 in twenty-dollar bills (approximately $1.3 million today)
+- Four parachutes (two primary, two reserve)
+- Fuel truck standing by in Seattle
+
+FLIGHT PATH ANALYSIS:
+Cooper instructed crew to fly at low altitude (under 10,000 feet) and reduced airspeed (approximately 200 mph). Weather conditions: rain, wind 25-30 mph, cloud ceiling 5,000 feet, temperature 37°F.
+
+JUMP LOCATION:
+Estimated jump zone: 25 miles northeast of Kelso, Washington, in heavily forested terrain. Time of jump: approximately 8:00 PM PST.
+
+MONEY RECOVERY:
+February 1980: $5,800 in deteriorating twenty-dollar bills discovered by 8-year-old Brian Ingram along Columbia River. Serial numbers matched Cooper's ransom money.`;
+
+            const questions = [
+                {
+                    id: 1,
+                    statement: "Cooper was described as approximately 45 years old.",
+                    correct: true,
+                    explanation: "Witness Florence Schaffner described him as approximately 45 years old."
+                },
+                {
+                    id: 2,
+                    statement: "Cooper's fingerprints were successfully recovered and identified.",
+                    correct: false,
+                    explanation: "Fingerprints were partial and unusable for identification."
+                },
+                {
+                    id: 3,
+                    statement: "Cooper left behind a black clip-on tie.",
+                    correct: true,
+                    explanation: "A black clip-on tie was found on his seat after he jumped."
+                },
+                {
+                    id: 4,
+                    statement: "Cooper demanded $300,000 in ransom money.",
+                    correct: false,
+                    explanation: "Cooper demanded $200,000 in twenty-dollar bills."
+                },
+                {
+                    id: 5,
+                    statement: "The weather conditions were clear on the night of the jump.",
+                    correct: false,
+                    explanation: "Weather conditions included rain, wind, and low temperature."
+                },
+                {
+                    id: 6,
+                    statement: "Cooper smoked Raleigh filter-tipped cigarettes.",
+                    correct: true,
+                    explanation: "Cigarette butts found were Raleigh filter-tipped brand."
+                },
+                {
+                    id: 7,
+                    statement: "All of the ransom money was eventually recovered.",
+                    correct: false,
+                    explanation: "Only $5,800 was found in 1980; the rest remains missing."
+                },
+                {
+                    id: 8,
+                    statement: "Cooper jumped at approximately 8:00 PM PST.",
+                    correct: true,
+                    explanation: "The estimated time of jump was approximately 8:00 PM PST."
+                },
+                {
+                    id: 9,
+                    statement: "Cooper requested six parachutes total.",
+                    correct: false,
+                    explanation: "Cooper requested four parachutes: two primary and two reserve."
+                },
+                {
+                    id: 10,
+                    statement: "The money was found by an adult hiker in 1980.",
+                    correct: false,
+                    explanation: "The money was found by 8-year-old Brian Ingram along the Columbia River."
+                }
+            ];
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                questions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-witness">
+                        <h2 className="text-2xl font-bold text-gold mb-6">📋 Case File Analysis</h2>
+                        
+                        <div className="card mb-6" style={{
+                            maxHeight: '400px',
+                            overflowY: 'auto',
+                            fontSize: '0.9rem',
+                            lineHeight: '1.6'
+                        }}>
+                            <h3 className="text-lg font-bold text-white mb-4">FBI Case File - Read Carefully:</h3>
+                            <div className="text-white opacity-90" style={{whiteSpace: 'pre-line'}}>
+                                {caseFileText}
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            {questions.map(question => (
+                                <div key={question.id} className="card">
+                                    <p className="text-white mb-4">{question.statement}</p>
+                                    <div className="flex gap-4 mb-4">
+                                        <button
+                                            className={`btn ${selectedAnswers[question.id] === true ? 'btn-primary' : ''} ${
+                                                showResults ? (question.correct === true ? 'btn-success' : 'btn-danger') : ''
+                                            }`}
+                                            onClick={() => handleAnswerSelect(question.id, true)}
+                                        >
+                                            True
+                                        </button>
+                                        <button
+                                            className={`btn ${selectedAnswers[question.id] === false ? 'btn-primary' : ''} ${
+                                                showResults ? (question.correct === false ? 'btn-success' : 'btn-danger') : ''
+                                            }`}
+                                            onClick={() => handleAnswerSelect(question.id, false)}
+                                        >
+                                            False
+                                        </button>
+                                    </div>
+                                    {showResults && (
+                                        <div className="text-white opacity-80 text-sm">
+                                            {selectedAnswers[question.id] === question.correct ? 
+                                                <CheckCircle className="w-4 h-4 inline mr-2" /> : 
+                                                <XCircle className="w-4 h-4 inline mr-2" />
+                                            }
+                                            {question.explanation}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < questions.length}
+                                    >
+                                        <FileText className="w-4 h-4" />
+                                        Submit Case Analysis
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Review Case File
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Analysis Score: {score}/{questions.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: TimelineReconstruction
+        const TimelineReconstruction = ({ onComplete, isCompleted }) => {
+            const [selectedOrder, setSelectedOrder] = useState([]);
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const timelineEvents = [
+                { id: 1, event: "Cooper boards Northwest Orient Flight 305 in Portland", time: "2:50 PM", correct: 1 },
+                { id: 2, event: "Cooper hands note to flight attendant Florence Schaffner", time: "3:00 PM", correct: 2 },
+                { id: 3, event: "Cooper shows contents of briefcase (bomb)", time: "3:05 PM", correct: 3 },
+                { id: 4, event: "Flight 305 lands in Seattle", time: "5:24 PM", correct: 4 },
+                { id: 5, event: "Passengers are released, ransom and parachutes delivered", time: "5:45 PM", correct: 5 },
+                { id: 6, event: "Flight takes off toward Mexico City", time: "7:36 PM", correct: 6 },
+                { id: 7, event: "Cooper lowers aft stairs and jumps into storm", time: "8:00 PM", correct: 7 },
+                { id: 8, event: "Crew realizes Cooper has jumped", time: "8:05 PM", correct: 8 }
+            ];
+
+            const correctOrder = timelineEvents.map(event => event.id);
+
+            const handleEventClick = (eventId) => {
+                if (showResults) return;
+                
+                if (selectedOrder.includes(eventId)) {
+                    setSelectedOrder(selectedOrder.filter(id => id !== eventId));
+                } else {
+                    setSelectedOrder([...selectedOrder, eventId]);
+                }
+            };
+
+            const checkTimeline = () => {
+                const correctCount = selectedOrder.reduce((count, eventId, index) => {
+                    return correctOrder[index] === eventId ? count + 1 : count;
+                }, 0);
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedOrder([]);
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-timeline">
+                        <h2 className="text-2xl font-bold text-gold mb-6">⏰ Timeline Reconstruction</h2>
+                        <p className="text-white opacity-90 mb-6">
+                            Arrange the events of November 24, 1971 in chronological order. Click events in the order they occurred.
+                        </p>
+
+                        <div className="mb-6">
+                            <h3 className="text-lg font-bold text-white mb-4">Selected Order:</h3>
+                            <div className="flex flex-wrap gap-2 min-h-12 border-2 border-dashed border-gold border-opacity-30 rounded-lg p-3">
+                                {selectedOrder.map((eventId, index) => {
+                                    const event = timelineEvents.find(e => e.id === eventId);
+                                    return (
+                                        <div key={eventId} className="badge badge-info">
+                                            {index + 1}. {event.time}
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="grid gap-3">
+                            {timelineEvents.map((event) => {
+                                const isSelected = selectedOrder.includes(event.id);
+                                const position = selectedOrder.indexOf(event.id) + 1;
+                                const isCorrect = showResults && selectedOrder[event.correct - 1] === event.id;
+                                
+                                return (
+                                    <div
+                                        key={event.id}
+                                        className={`match-item cursor-pointer ${
+                                            isSelected ? 'selected' : ''
+                                        } ${showResults ? (isCorrect ? 'correct' : 'incorrect') : ''}`}
+                                        onClick={() => handleEventClick(event.id)}
+                                    >
+                                        <div className="flex justify-between items-center">
+                                            <div>
+                                                <Clock className="w-4 h-4 inline mr-2" />
+                                                <span className="font-bold">{event.time}</span> - {event.event}
+                                            </div>
+                                            {isSelected && (
+                                                <div className="badge">
+                                                    #{position}
+                                                </div>
+                                            )}
+                                            {showResults && (
+                                                <div>
+                                                    {isCorrect ? 
+                                                        <CheckCircle className="w-4 h-4 text-green-400" /> : 
+                                                        <XCircle className="w-4 h-4 text-red-400" />
+                                                    }
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkTimeline}
+                                        disabled={selectedOrder.length !== timelineEvents.length}
+                                    >
+                                        <Clock className="w-4 h-4" />
+                                        Verify Timeline
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Reconstruct Timeline
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Timeline Score: {score}/{timelineEvents.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: SuspectInvestigation
+        const SuspectInvestigation = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "Which of these was NOT a major suspect in the D.B. Cooper case?",
+                    options: ["Richard Floyd McCoy", "Robert Rackstraw", "Sheridan Peterson", "Al Capone"],
+                    correct: "Al Capone"
+                },
+                {
+                    id: 2,
+                    question: "What did Richard Floyd McCoy do that connected him to Cooper?",
+                    options: [
+                        "He confessed to being Cooper",
+                        "He executed a similar hijacking months later",
+                        "He was found with Cooper's money",
+                        "He worked for Northwest Orient"
+                    ],
+                    correct: "He executed a similar hijacking months later"
+                },
+                {
+                    id: 3,
+                    question: "What evidence suggests Cooper had aviation knowledge?",
+                    options: [
+                        "He knew Boeing 727 capabilities",
+                        "He wore a pilot's uniform",
+                        "He had flight training certificates",
+                        "He operated the aircraft controls"
+                    ],
+                    correct: "He knew Boeing 727 capabilities"
+                },
+                {
+                    id: 4,
+                    question: "Why do experts believe Cooper likely died?",
+                    options: [
+                        "He was shot by police",
+                        "Harsh weather and business attire",
+                        "The parachute was defective",
+                        "He had a heart attack"
+                    ],
+                    correct: "Harsh weather and business attire"
+                },
+                {
+                    id: 5,
+                    question: "What made the Cooper case unique among hijackings?",
+                    options: [
+                        "He was violent and threatening",
+                        "He demanded jewels instead of money",
+                        "He was polite and courteous",
+                        "He hijacked multiple planes"
+                    ],
+                    correct: "He was polite and courteous"
+                },
+                {
+                    id: 6,
+                    question: "How many suspects did the FBI investigate over the years?",
+                    options: ["Around 100", "Around 300", "Around 800", "Over 1,000"],
+                    correct: "Over 1,000"
+                },
+                {
+                    id: 7,
+                    question: "What theory suggests Cooper survived?",
+                    options: [
+                        "He was an experienced skydiver",
+                        "He had military training",
+                        "He knew the terrain well",
+                        "All of the above"
+                    ],
+                    correct: "All of the above"
+                },
+                {
+                    id: 8,
+                    question: "When did the FBI officially suspend active investigation?",
+                    options: ["2014", "2015", "2016", "2017"],
+                    correct: "2016"
+                },
+                {
+                    id: 9,
+                    question: "What was found in 2008 near Amboy, Washington?",
+                    options: ["Cooper's briefcase", "A parachute", "More money", "Cooper's tie"],
+                    correct: "A parachute"
+                },
+                {
+                    id: 10,
+                    question: "What makes D.B. Cooper a folk hero?",
+                    options: [
+                        "He hurt no one and outsmarted the system",
+                        "He donated the money to charity",
+                        "He became a famous movie star",
+                        "He returned the money voluntarily"
+                    ],
+                    correct: "He hurt no one and outsmarted the system"
+                },
+                {
+                    id: 11,
+                    question: "What was the weather temperature during Cooper's jump?",
+                    options: ["Near freezing (37°F)", "Very cold (20°F)", "Mild (50°F)", "Warm (60°F)"],
+                    correct: "Near freezing (37°F)"
+                },
+                {
+                    id: 12,
+                    question: "How long did the FBI's investigation span?",
+                    options: ["25 years", "35 years", "45 years", "55 years"],
+                    correct: "45 years"
+                }
+            ];
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                questions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-investigation">
+                        <h2 className="text-2xl font-bold text-gold mb-6">🕵️ Suspect Investigation</h2>
+                        <p className="text-white opacity-90 mb-6">Test your knowledge about the suspects and theories in the D.B. Cooper case.</p>
+                        
+                        <div className="space-y-4">
+                            {questions.map((question, index) => (
+                                <div key={question.id} className="card">
+                                    <h3 className="text-lg font-bold text-white mb-4">
+                                        Question {index + 1}: {question.question}
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {question.options.map((option, optionIndex) => {
+                                            const letter = String.fromCharCode(65 + optionIndex);
+                                            return (
+                                                <button
+                                                    key={optionIndex}
+                                                    className={`btn w-full text-left justify-start ${
+                                                        selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                    } ${showResults ? (
+                                                        option === question.correct ? 'btn-success' : 
+                                                        selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                    ) : ''}`}
+                                                    onClick={() => handleAnswerSelect(question.id, option)}
+                                                    disabled={showResults}
+                                                >
+                                                    <span className="font-bold mr-3">{letter}.</span>
+                                                    {option}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {showResults && (
+                                        <div className="mt-3 text-white opacity-80 text-sm">
+                                            {selectedAnswers[question.id] === question.correct ? 
+                                                <div className="flex items-center text-green-400">
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Correct!
+                                                </div> : 
+                                                <div className="flex items-center text-red-400">
+                                                    <XCircle className="w-4 h-4 mr-2" />
+                                                    Incorrect. The correct answer is: {question.correct}
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < questions.length}
+                                    >
+                                        <Users className="w-4 h-4" />
+                                        Submit Investigation
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Re-investigate Suspects
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Investigation Score: {score}/{questions.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: DetectiveVocabulary
+        const DetectiveVocabulary = ({ onComplete, isCompleted }) => {
+            const [partAAnswers, setPartAAnswers] = useState({});
+            const [partBAnswers, setPartBAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const vocabularyTerms = ['hijack', 'ransom', 'suspect', 'evidence', 'witness'];
+            const meanings = [
+                'to illegally seize control of a vehicle',
+                'money demanded for release or safety',
+                'a person believed to have committed a crime',
+                'information or objects that prove something',
+                'a person who saw an event happen'
+            ];
+
+            const partACorrectAnswers = {
+                'hijack': 'to illegally seize control of a vehicle',
+                'ransom': 'money demanded for release or safety',
+                'suspect': 'a person believed to have committed a crime',
+                'evidence': 'information or objects that prove something',
+                'witness': 'a person who saw an event happen'
+            };
+
+            const sentences = [
+                { id: 1, text: "The FBI collected _______ from the airplane seat.", answer: "evidence" },
+                { id: 2, text: "Cooper became the main _______ in the investigation.", answer: "suspect" },
+                { id: 3, text: "The flight attendant was an important _______.", answer: "witness" },
+                { id: 4, text: "Cooper demanded $200,000 as _______.", answer: "ransom" },
+                { id: 5, text: "Cooper planned to _______ the aircraft.", answer: "hijack" }
+            ];
+
+            const handlePartASelect = (term, meaning) => {
+                if (showResults) return;
+                setPartAAnswers(prev => ({
+                    ...prev,
+                    [term]: meaning
+                }));
+            };
+
+            const handlePartBSelect = (sentenceId, word) => {
+                if (showResults) return;
+                setPartBAnswers(prev => ({
+                    ...prev,
+                    [sentenceId]: word
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                
+                // Check Part A
+                Object.keys(partACorrectAnswers).forEach(term => {
+                    if (partAAnswers[term] === partACorrectAnswers[term]) {
+                        correctCount++;
+                    }
+                });
+
+                // Check Part B
+                sentences.forEach(sentence => {
+                    if (partBAnswers[sentence.id] === sentence.answer) {
+                        correctCount++;
+                    }
+                });
+
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setPartAAnswers({});
+                setPartBAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-mystery">
+                        <h2 className="text-2xl font-bold text-gold mb-6">🧠 Detective Vocabulary</h2>
+                        
+                        {/* Part A: Match Terms with Meanings */}
+                        <div className="mb-8">
+                            <h3 className="text-xl font-bold text-white mb-4">Part A: Match detective terms with their meanings</h3>
+                            <div className="grid grid-cols-2 gap-6">
+                                <div>
+                                    <h4 className="font-bold text-white mb-3">Terms</h4>
+                                    {vocabularyTerms.map(term => (
+                                        <div
+                                            key={term}
+                                            className={`match-item ${partAAnswers[term] ? 'selected' : ''} ${
+                                                showResults ? (partAAnswers[term] === partACorrectAnswers[term] ? 'correct' : 'incorrect') : ''
+                                            }`}
+                                            onClick={() => !showResults && setPartAAnswers(prev => ({ ...prev, selectedTerm: term }))}
+                                        >
+                                            {term}
+                                        </div>
+                                    ))}
+                                </div>
+                                <div>
+                                    <h4 className="font-bold text-white mb-3">Meanings</h4>
+                                    {meanings.map(meaning => (
+                                        <div
+                                            key={meaning}
+                                            className={`match-item ${
+                                                partAAnswers.selectedTerm ? '' : 'opacity-70'
+                                            }`}
+                                            onClick={() => partAAnswers.selectedTerm && handlePartASelect(partAAnswers.selectedTerm, meaning)}
+                                        >
+                                            {meaning}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Part B: Complete Sentences */}
+                        <div>
+                            <h3 className="text-xl font-bold text-white mb-4">Part B: Complete the sentences</h3>
+                            {sentences.map(sentence => (
+                                <div key={sentence.id} className="card mb-4">
+                                    <p className="text-white mb-3 text-lg">{sentence.text}</p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {vocabularyTerms.map(term => (
+                                            <button
+                                                key={term}
+                                                className={`btn ${partBAnswers[sentence.id] === term ? 'btn-primary' : ''} ${
+                                                    showResults ? (term === sentence.answer ? 'btn-success' : 
+                                                    partBAnswers[sentence.id] === term ? 'btn-danger' : '') : ''
+                                                }`}
+                                                onClick={() => handlePartBSelect(sentence.id, term)}
+                                                disabled={showResults}
+                                            >
+                                                {term}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(partAAnswers).length < vocabularyTerms.length || 
+                                                Object.keys(partBAnswers).length < sentences.length}
+                                    >
+                                        <Brain className="w-4 h-4" />
+                                        Check Vocabulary
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Practice Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Vocabulary Score: {score}/{vocabularyTerms.length + sentences.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: InvestigationGrammar
+        const InvestigationGrammar = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const sentences = [
+                { id: 1, text: "Cooper jumped _______ the aircraft at 8:00 PM.", options: ["from", "to", "under", "beside"], answer: "from" },
+                { id: 2, text: "The money was hidden _______ the forest.", options: ["in", "on", "above", "beside"], answer: "in" },
+                { id: 3, text: "Cooper sat _______ seat 18E during the flight.", options: ["in", "on", "under", "above"], answer: "in" },
+                { id: 4, text: "The FBI searched _______ the Columbia River.", options: ["along", "through", "under", "above"], answer: "along" },
+                { id: 5, text: "Cooper walked _______ the aisle to the back of the plane.", options: ["down", "up", "around", "beside"], answer: "down" },
+                { id: 6, text: "The parachute was found _______ Amboy, Washington.", options: ["near", "far", "under", "above"], answer: "near" },
+                { id: 7, text: "Cooper placed the bomb _______ his briefcase.", options: ["in", "on", "under", "above"], answer: "in" },
+                { id: 8, text: "The flight attendant walked _______ Cooper's seat.", options: ["to", "from", "around", "through"], answer: "to" }
+            ];
+
+            const handleAnswerSelect = (sentenceId, preposition) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [sentenceId]: preposition
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                sentences.forEach(sentence => {
+                    if (selectedAnswers[sentence.id] === sentence.answer) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-timeline">
+                        <h2 className="text-2xl font-bold text-gold mb-6">📚 Investigation Grammar</h2>
+                        <p className="text-white opacity-90 mb-6">Choose the correct preposition to complete each sentence about the Cooper case.</p>
+                        
+                        <div className="space-y-4">
+                            {sentences.map(sentence => (
+                                <div key={sentence.id} className="card">
+                                    <p className="text-white mb-4 text-lg">{sentence.text}</p>
+                                    <div className="flex gap-2 flex-wrap">
+                                        {sentence.options.map(option => (
+                                            <button
+                                                key={option}
+                                                className={`btn ${selectedAnswers[sentence.id] === option ? 'btn-primary' : ''} ${
+                                                    showResults ? (option === sentence.answer ? 'btn-success' : 
+                                                    selectedAnswers[sentence.id] === option ? 'btn-danger' : '') : ''
+                                                }`}
+                                                onClick={() => handleAnswerSelect(sentence.id, option)}
+                                                disabled={showResults}
+                                            >
+                                                {option}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    {showResults && (
+                                        <div className="mt-3 text-white opacity-80 text-sm">
+                                            {selectedAnswers[sentence.id] === sentence.answer ? 
+                                                <div className="flex items-center text-green-400">
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Correct!
+                                                </div> : 
+                                                <div className="flex items-center text-red-400">
+                                                    <XCircle className="w-4 h-4 mr-2" />
+                                                    Correct answer: {sentence.answer}
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < sentences.length}
+                                    >
+                                        <BookOpen className="w-4 h-4" />
+                                        Check Grammar
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Practice Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Grammar Score: {score}/{sentences.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: TheoryAnalysis
+        const TheoryAnalysis = ({ onComplete, isCompleted }) => {
+            const [selectedAnswers, setSelectedAnswers] = useState({});
+            const [showResults, setShowResults] = useState(false);
+            const [score, setScore] = useState(0);
+
+            const questions = [
+                {
+                    id: 1,
+                    question: "Which theory suggests Cooper died during the jump?",
+                    options: [
+                        "Weather conditions and business attire made survival impossible",
+                        "Cooper was an experienced military paratrooper",
+                        "Cooper had inside help from the airline"
+                    ],
+                    correct: "Weather conditions and business attire made survival impossible"
+                },
+                {
+                    id: 2,
+                    question: "What evidence supports the survival theory?",
+                    options: [
+                        "Cooper's body was found",
+                        "Cooper had apparent aviation knowledge",
+                        "All the money was recovered"
+                    ],
+                    correct: "Cooper had apparent aviation knowledge"
+                },
+                {
+                    id: 3,
+                    question: "Why might Cooper have chosen the Boeing 727?",
+                    options: [
+                        "It was the only available aircraft",
+                        "It had aft stairs that could be lowered in flight",
+                        "It was the fastest commercial aircraft"
+                    ],
+                    correct: "It had aft stairs that could be lowered in flight"
+                },
+                {
+                    id: 4,
+                    question: "What suggests Cooper may have been a professional?",
+                    options: [
+                        "He wore expensive clothes",
+                        "He knew technical aviation terms and procedures",
+                        "He carried a business briefcase"
+                    ],
+                    correct: "He knew technical aviation terms and procedures"
+                },
+                {
+                    id: 5,
+                    question: "Which factor supports the theory Cooper died?",
+                    options: [
+                        "No confirmed sightings after the jump",
+                        "Cooper was seen in Mexico",
+                        "Cooper sent letters to newspapers"
+                    ],
+                    correct: "No confirmed sightings after the jump"
+                },
+                {
+                    id: 6,
+                    question: "What makes the Cooper case unique in criminal history?",
+                    options: [
+                        "It involved the most money ever stolen",
+                        "It remains the only unsolved US air piracy case",
+                        "It was the first airplane hijacking"
+                    ],
+                    correct: "It remains the only unsolved US air piracy case"
+                }
+            ];
+
+            const handleAnswerSelect = (questionId, answer) => {
+                if (showResults) return;
+                setSelectedAnswers(prev => ({
+                    ...prev,
+                    [questionId]: answer
+                }));
+            };
+
+            const checkAnswers = () => {
+                let correctCount = 0;
+                questions.forEach(question => {
+                    if (selectedAnswers[question.id] === question.correct) {
+                        correctCount++;
+                    }
+                });
+                setScore(correctCount);
+                setShowResults(true);
+                onComplete(correctCount);
+            };
+
+            const resetExercise = () => {
+                setSelectedAnswers({});
+                setShowResults(false);
+                setScore(0);
+            };
+
+            return (
+                <div className="fade-in">
+                    <div className="card card-mystery">
+                        <h2 className="text-2xl font-bold text-gold mb-6">🔮 Theory Analysis</h2>
+                        <p className="text-white opacity-90 mb-6">
+                            Analyze different theories about what happened to D.B. Cooper. Choose the most supported answer for each question.
+                        </p>
+                        
+                        <div className="space-y-4">
+                            {questions.map((question, index) => (
+                                <div key={question.id} className="card">
+                                    <h3 className="text-lg font-bold text-white mb-4">
+                                        Question {index + 1}: {question.question}
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {question.options.map((option, optionIndex) => {
+                                            const letter = String.fromCharCode(65 + optionIndex);
+                                            return (
+                                                <button
+                                                    key={optionIndex}
+                                                    className={`btn w-full text-left justify-start ${
+                                                        selectedAnswers[question.id] === option ? 'btn-primary' : ''
+                                                    } ${showResults ? (
+                                                        option === question.correct ? 'btn-success' : 
+                                                        selectedAnswers[question.id] === option ? 'btn-danger' : ''
+                                                    ) : ''}`}
+                                                    onClick={() => handleAnswerSelect(question.id, option)}
+                                                    disabled={showResults}
+                                                >
+                                                    <span className="font-bold mr-3">{letter}.</span>
+                                                    {option}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+                                    {showResults && (
+                                        <div className="mt-3 text-white opacity-80 text-sm">
+                                            {selectedAnswers[question.id] === question.correct ? 
+                                                <div className="flex items-center text-green-400">
+                                                    <CheckCircle className="w-4 h-4 mr-2" />
+                                                    Correct analysis!
+                                                </div> : 
+                                                <div className="flex items-center text-red-400">
+                                                    <XCircle className="w-4 h-4 mr-2" />
+                                                    Better analysis: {question.correct}
+                                                </div>
+                                            }
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex justify-between items-center mt-6">
+                            <div className="flex gap-4">
+                                {!showResults && (
+                                    <button 
+                                        className="btn btn-primary" 
+                                        onClick={checkAnswers}
+                                        disabled={Object.keys(selectedAnswers).length < questions.length}
+                                    >
+                                        <Target className="w-4 h-4" />
+                                        Submit Analysis
+                                    </button>
+                                )}
+                                {showResults && (
+                                    <button className="btn" onClick={resetExercise}>
+                                        <RotateCcw className="w-4 h-4" />
+                                        Analyze Again
+                                    </button>
+                                )}
+                            </div>
+                            {showResults && (
+                                <div className="badge badge-success">
+                                    Analysis Score: {score}/{questions.length}
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Component: IntroPage
+        const IntroPage = ({ onComplete }) => {
+            const [countdown, setCountdown] = useState(10);
+            
+            useEffect(() => {
+                const timer = setInterval(() => {
+                    setCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(timer);
+                            onComplete();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                
+                return () => clearInterval(timer);
+            }, [onComplete]);
+
+            return (
+                <div className="detective-bg noir-gradient min-h-screen relative overflow-hidden">
+                    {/* Fun Background Animation */}
+                    <div 
+                        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+                        style={{
+                            backgroundImage: `url('data:image/svg+xml,${encodeURIComponent(`
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800">
+                                    <defs>
+                                        <radialGradient id="spotlight" cx="50%" cy="30%" r="60%">
+                                            <stop offset="0%" style="stop-color:#ffd700;stop-opacity:0.4"/>
+                                            <stop offset="100%" style="stop-color:#8B4513;stop-opacity:0.8"/>
+                                        </radialGradient>
+                                    </defs>
+                                    <rect width="100%" height="100%" fill="url(#spotlight)"/>
+                                    <g opacity="0.8">
+                                        <!-- Friendly airplane -->
+                                        <path d="M400 350 L800 350 L820 370 L790 380 L400 380 Z" fill="#ffd700"/>
+                                        <path d="M450 320 L750 320 L750 350 L450 350 Z" fill="#ffd700"/>
+                                        <circle cx="500" cy="350" r="12" fill="#2c1810"/>
+                                        <circle cx="550" cy="350" r="12" fill="#2c1810"/>
+                                        <circle cx="600" cy="350" r="12" fill="#2c1810"/>
+                                        <circle cx="650" cy="350" r="12" fill="#2c1810"/>
+                                        <!-- Colorful parachute -->
+                                        <path d="M600 450 Q580 430 560 450 Q580 470 600 450 Q620 470 640 450 Q620 430 600 450" fill="#ff6b6b" opacity="0.8"/>
+                                        <path d="M580 450 Q560 430 540 450 Q560 470 580 450" fill="#4ecdc4" opacity="0.8"/>
+                                        <path d="M620 450 Q640 430 660 450 Q640 470 620 450" fill="#45b7d1" opacity="0.8"/>
+                                        <line x1="600" y1="450" x2="600" y2="500" stroke="#ffd700" stroke-width="3"/>
+                                        <!-- Detective figure -->
+                                        <circle cx="600" cy="510" r="10" fill="#ffd700"/>
+                                        <rect x="593" y="515" width="14" height="25" fill="#8B4513" rx="2"/>
+                                        <!-- Fun question marks -->
+                                        <text x="300" y="200" font-family="serif" font-size="40" fill="#ffd700" opacity="0.6">?</text>
+                                        <text x="800" y="250" font-family="serif" font-size="35" fill="#ffd700" opacity="0.7">?</text>
+                                        <text x="200" y="600" font-family="serif" font-size="30" fill="#ffd700" opacity="0.5">?</text>
+                                        <text x="900" y="650" font-family="serif" font-size="38" fill="#ffd700" opacity="0.6">?</text>
+                                    </g>
+                                </svg>
+                            `)}')`
+                        }}
+                    />
+
+                    {/* Content */}
+                    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen text-center px-8">
+                        <div className="max-w-4xl mx-auto">
+                            <h1 className="text-7xl font-bold text-yellow-400 mb-6 tracking-wider" style={{
+                                textShadow: '3px 3px 6px rgba(0,0,0,0.8), 0 0 20px rgba(255,215,0,0.3)'
+                            }}>
+                                🕵️ D.B. COOPER 🪂
+                            </h1>
+                            <h2 className="text-3xl font-bold text-white mb-8 opacity-90">
+                                MYSTERY DETECTIVE ADVENTURE
+                            </h2>
+                            
+                            <div className="glass-card p-8 mb-8" style={{
+                                background: 'rgba(255, 215, 0, 0.15)',
+                                backdropFilter: 'blur(10px)',
+                                border: '2px solid rgba(255, 215, 0, 0.4)',
+                                borderRadius: '15px'
+                            }}>
+                                <div className="text-yellow-400 text-xl font-bold mb-4">
+                                    🔍 DETECTIVE MISSION BRIEFING 🔍
+                                </div>
+                                <div className="text-white text-left space-y-3 text-lg">
+                                    <p><strong className="text-yellow-400">📅 When:</strong> November 24, 1971</p>
+                                    <p><strong className="text-yellow-400">👤 Who:</strong> Mysterious man called "Dan Cooper"</p>
+                                    <p><strong className="text-yellow-400">✈️ What:</strong> Airplane mystery adventure</p>
+                                    <p><strong className="text-yellow-400">❓ Status:</strong> The greatest unsolved mystery in America!</p>
+                                    <p><strong className="text-yellow-400">🎯 Your Job:</strong> Solve clues, find evidence, crack the case!</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-center gap-4 text-white text-2xl mb-6">
+                                <div className="animate-bounce text-4xl">🎬</div>
+                                <span>Adventure starts in {countdown} seconds!</span>
+                                <div className="animate-bounce text-4xl">🎬</div>
+                            </div>
+                            
+                            <div className="text-yellow-400 text-lg opacity-80">
+                                "Get ready to become a detective and solve one of history's biggest mysteries!"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // Main App Component
+        function App() {
+            const [showIntro, setShowIntro] = useState(true);
+            const [currentExercise, setCurrentExercise] = useState(0);
+            const [totalScore, setTotalScore] = useState(0);
+            const [completedExercises, setCompletedExercises] = useState(new Set());
+
+            const exercises = [
+                {
+                    id: 'documentary',
+                    title: 'D.B. Cooper Documentary',
+                    description: 'Watch, listen, and read the complete case file. Then answer comprehension questions.',
+                    icon: <PlayCircle className="w-6 h-6" />,
+                    component: DBCooperDocumentary,
+                    maxScore: 10,
+                    cardClass: 'card-case-file'
+                },
+                {
+                    id: 'evidence',
+                    title: 'Evidence Matching',
+                    description: 'Match investigation terms with their correct definitions',
+                    icon: <MagnifyingGlass className="w-6 h-6" />,
+                    component: EvidenceMatching,
+                    maxScore: 8,
+                    cardClass: 'card-evidence'
+                },
+                {
+                    id: 'casefile',
+                    title: 'Case File Analysis',
+                    description: 'Analyze FBI case file documents and witness statements',
+                    icon: <FileText className="w-6 h-6" />,
+                    component: CaseFileAnalysis,
+                    maxScore: 10,
+                    cardClass: 'card-witness'
+                },
+                {
+                    id: 'timeline',
+                    title: 'Timeline Reconstruction',
+                    description: 'Put the events of November 24, 1971 in correct chronological order',
+                    icon: <Clock className="w-6 h-6" />,
+                    component: TimelineReconstruction,
+                    maxScore: 8,
+                    cardClass: 'card-timeline'
+                },
+                {
+                    id: 'suspects',
+                    title: 'Suspect Investigation',
+                    description: 'Multiple choice questions about suspects and theories',
+                    icon: <Users className="w-6 h-6" />,
+                    component: SuspectInvestigation,
+                    maxScore: 12,
+                    cardClass: 'card-investigation'
+                },
+                {
+                    id: 'vocabulary',
+                    title: 'Detective Vocabulary',
+                    description: 'Learn detective and aviation terminology used in the case',
+                    icon: <Brain className="w-6 h-6" />,
+                    component: DetectiveVocabulary,
+                    maxScore: 10,
+                    cardClass: 'card-mystery'
+                },
+                {
+                    id: 'grammar',
+                    title: 'Investigation Grammar',
+                    description: 'Practice prepositions with investigation-themed sentences',
+                    icon: <BookOpen className="w-6 h-6" />,
+                    component: InvestigationGrammar,
+                    maxScore: 8,
+                    cardClass: 'card-timeline'
+                },
+                {
+                    id: 'theories',
+                    title: 'Theory Analysis',
+                    description: 'Compare different theories about what happened to D.B. Cooper',
+                    icon: <Target className="w-6 h-6" />,
+                    component: TheoryAnalysis,
+                    maxScore: 6,
+                    cardClass: 'card-mystery'
+                }
+            ];
+
+            const handleExerciseComplete = (score) => {
+                setTotalScore(prev => prev + score);
+                setCompletedExercises(prev => new Set([...prev, exercises[currentExercise].id]));
+                
+                // Automatically move to next exercise
+                if (currentExercise < exercises.length - 1) {
+                    setCurrentExercise(currentExercise + 1);
+                } else {
+                    // Show final results
+                    setCurrentExercise(-1);
+                }
+            };
+
+            const totalPossibleScore = exercises.reduce((sum, ex) => sum + ex.maxScore, 0);
+
+            // Show intro page
+            if (showIntro) {
+                return <IntroPage onComplete={() => setShowIntro(false)} />;
+            }
+            // Final Results Page
+            if (currentExercise === -1) {
+                const percentage = Math.round((totalScore / totalPossibleScore) * 100);
+                let rank = "";
+                let rankDescription = "";
+                
+                if (percentage >= 90) {
+                    rank = "🏆 Master Detective";
+                    rankDescription = "Outstanding investigative work! You've solved the case with exceptional skill.";
+                } else if (percentage >= 80) {
+                    rank = "🕵️ Senior Investigator";
+                    rankDescription = "Excellent detective work! You have a keen eye for detail.";
+                } else if (percentage >= 70) {
+                    rank = "👮 Detective";
+                    rankDescription = "Good investigative skills! You're getting closer to the truth.";
+                } else if (percentage >= 60) {
+                    rank = "🔍 Investigator";
+                    rankDescription = "Solid detective work! Keep honing your skills.";
+                } else {
+                    rank = "👤 Rookie";
+                    rankDescription = "Everyone starts somewhere! Consider reviewing the case files.";
+                }
+
+                return (
+                    <div className="detective-bg noir-gradient min-h-screen">
+                        <div className="container py-12">
+                            <div className="text-center mb-12">
+                                <div className="border-2 border-gold bg-gold bg-opacity-20 px-6 py-2 mb-6 inline-block">
+                                    <span className="text-gold font-bold text-lg tracking-widest">● CASE CLOSED ●</span>
+                                </div>
+                                
+                                <h1 className="text-6xl font-bold text-gold mb-6">
+                                    Investigation Complete
+                                </h1>
+                                
+                                <div className="glass-card max-w-2xl mx-auto p-8 mb-8">
+                                    <div className="text-4xl font-bold text-gold mb-4">{rank}</div>
+                                    <div className="text-2xl text-white mb-4">
+                                        Final Score: {totalScore}/{totalPossibleScore} ({percentage}%)
+                                    </div>
+                                    <p className="text-white opacity-90 mb-6">{rankDescription}</p>
+                                    
+                                    <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div className="badge badge-info">
+                                            Exercises Completed: {completedExercises.size}/{exercises.length}
+                                        </div>
+                                        <div className="badge badge-success">
+                                            Evidence Analyzed: {totalScore} pieces
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="glass-card max-w-4xl mx-auto p-6">
+                                    <h3 className="text-xl font-bold text-gold mb-4">🎯 Case Summary</h3>
+                                    <p className="text-white opacity-90 leading-relaxed">
+                                        You've examined the evidence, analyzed witness statements, reconstructed the timeline, 
+                                        and studied various theories about D.B. Cooper's fate. Whether he survived that stormy 
+                                        November night or perished in the wilderness remains one of America's greatest mysteries. 
+                                        The case may be cold, but the legend of the gentleman bandit who outsmarted the system 
+                                        continues to captivate investigators and the public alike.
+                                    </p>
+                                </div>
+
+                                <button 
+                                    onClick={() => {
+                                        setCurrentExercise(0);
+                                        setTotalScore(0);
+                                        setCompletedExercises(new Set());
+                                        setShowIntro(true);
+                                    }}
+                                    className="btn btn-primary mt-8 text-lg px-8 py-3"
+                                >
+                                    <RotateCcw className="w-5 h-5 mr-2" />
+                                    Reopen Case File
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            // Exercise Pages
+            const exercise = exercises[currentExercise];
+            const ExerciseComponent = exercise.component;
+            const progress = Math.round(((currentExercise + 1) / exercises.length) * 100);
+
+            return (
+                <div className="detective-bg noir-gradient min-h-screen">
+                    <div className="container py-8">
+                        {/* Header with progress */}
+                        <div className="mb-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <div className="flex items-center gap-4">
+                                    <div className="text-gold font-bold text-lg">
+                                        Case #{currentExercise + 1} of {exercises.length}
+                                    </div>
+                                    <div className="badge badge-info">
+                                        Progress: {progress}%
+                                    </div>
+                                </div>
+                                <div className="badge badge-success">
+                                    Total Score: {totalScore}
+                                </div>
+                            </div>
+                            
+                            {/* Progress bar */}
+                            <div className="w-full bg-black bg-opacity-30 rounded-full h-2 mb-4">
+                                <div 
+                                    className="bg-gold h-2 rounded-full transition-all duration-500"
+                                    style={{ width: `${progress}%` }}
+                                ></div>
+                            </div>
+                            
+                            <h1 className="text-3xl font-bold text-gold flex items-center gap-3">
+                                {exercise.icon}
+                                {exercise.title}
+                            </h1>
+                            <p className="text-white opacity-80 mt-2">{exercise.description}</p>
+                        </div>
+                        
+                        <ExerciseComponent 
+                            onComplete={handleExerciseComplete}
+                            isCompleted={completedExercises.has(exercise.id)}
+                        />
+                    </div>
+                </div>
+            );
+        }
+
+        // Render the app
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
